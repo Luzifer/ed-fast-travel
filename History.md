@@ -1,3 +1,7 @@
+# 0.5.1 / 2016-09-11
+
+  * Fix self-update
+
 # 0.5.0 / 2016-09-11
 
   * Add autoupdater
