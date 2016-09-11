@@ -37,3 +37,8 @@ Example: ed-fast-travel 'Sol' 'Dryooe Prou GL-Y d369' 500
 ```
 
 The usage explanation appears because no parameters for routing are passed in that execution but the database now is refreshed. Please be nice to the EDSM servers and refresh only if you are sure you need to get new data and that there is new data. Refreshing multiple times a day does not give you any advantages as the database is only updated once a day.
+
+## Build from source
+
+- To build this utility from source you need to have a working go 1.6 or 1.7 environment.
+- Execute `go get github.com/Luzifer/ed-fast-travel` and you will get the `ed-fast-travel` binary inside your `$GOPATH/bin/` directory
