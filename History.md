@@ -1,3 +1,7 @@
+# 0.6.0 / 2016-09-11
+
+  * Disable update check when using version built from source
+
 # 0.5.1 / 2016-09-11
 
   * Fix self-update
