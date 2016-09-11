@@ -1,3 +1,7 @@
+# 0.2.1 / 2016-09-11
+
+  * Add instructions for manual build
+
 # 0.2.0 / 2016-09-11
 
   * Disable color output on windows by default
