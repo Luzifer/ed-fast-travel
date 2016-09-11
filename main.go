@@ -23,6 +23,7 @@ var (
 	cfg = struct {
 		Color          bool   `flag:"color" vardefault:"color" description:"Use color for output"`
 		EDSMDumpPath   string `flag:"data-path" default:"~/.local/share/ed-fast-travel" description:"Path to store EDSM data"`
+		Silent         bool   `flag:"silent,s" default:"false" description:"Suppress every message except the flight plan"`
 		UpdateData     bool   `flag:"update" default:"false" description:"Fetch latest dump from EDSM"`
 		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
 	}{}
@@ -50,6 +51,12 @@ func init() {
 	}
 }
 
+func verboseLog(format string, args ...interface{}) {
+	if !cfg.Silent {
+		log.Printf(format, args...)
+	}
+}
+
 func main() {
 	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, "dump.json")); err != nil || cfg.UpdateData {
 		if err := refreshEDSMData(); err != nil {
@@ -72,14 +79,14 @@ func main() {
 	}
 
 	// Load database
-	log.Printf("Loading database...")
+	verboseLog("Loading database...")
 	starSystems, err := loadStarSystems()
 	if err != nil {
 		log.Fatalf("Could not load star systems from dump: %s", err)
 	}
 
 	// Search system
-	log.Printf("Searching your start / destination system...")
+	verboseLog("Searching your start / destination system...")
 	start := getSystemByName(starSystems, startSystem)
 	target := getSystemByName(starSystems, targetSystem)
 
@@ -92,11 +99,11 @@ func main() {
 
 	linearDistance := start.Coords.DistanceLy(target.Coords)
 
-	log.Printf("Found start system '%s' at coordinates (%.5f / %.5f / %.5f)",
+	verboseLog("Found start system '%s' at coordinates (%.5f / %.5f / %.5f)",
 		start.Name, start.Coords.X, start.Coords.Y, start.Coords.Z)
-	log.Printf("Found destination system '%s' at coordinates (%.5f / %.5f / %.5f)",
+	verboseLog("Found destination system '%s' at coordinates (%.5f / %.5f / %.5f)",
 		target.Name, target.Coords.X, target.Coords.Y, target.Coords.Z)
-	log.Printf("Linear distance between that systems is %.2f Ly",
+	verboseLog("Linear distance between that systems is %.2f Ly",
 		linearDistance)
 
 	// Calculate steps
@@ -117,7 +124,7 @@ func main() {
 		stopNo += 1
 	}
 
-	log.Printf("Calculation shows an overhead of %.2f Ly in comparison to linear distance.", totalFlight-linearDistance)
+	verboseLog("Calculation shows an overhead of %.2f Ly in comparison to linear distance.", totalFlight-linearDistance)
 }
 
 func getSystemByNearestCoordinate(systems []starSystem, coords starCoordinate, skipSystem starSystem) *starSystem {
@@ -156,7 +163,7 @@ func loadStarSystems() ([]starSystem, error) {
 }
 
 func refreshEDSMData() error {
-	log.Printf("No local EDSM dump found or update forced, fetching dump...")
+	verboseLog("No local EDSM dump found or update forced, fetching dump...")
 	if err := os.MkdirAll(cfg.EDSMDumpPath, 0755); err != nil {
 		return err
 	}
