@@ -1,3 +1,7 @@
+# 0.1.2 / 2016-09-11
+
+  * Fix gobuilder builds
+
 # 0.1.1 / 2016-09-11
 
   * Vendor dependencies
