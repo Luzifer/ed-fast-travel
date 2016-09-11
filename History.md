@@ -1,3 +1,7 @@
+# 0.3.0 / 2016-09-11
+
+  * Add flag to silence log ouput
+
 # 0.2.1 / 2016-09-11
 
   * Add instructions for manual build
