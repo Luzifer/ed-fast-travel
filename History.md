@@ -1,3 +1,7 @@
+# 0.2.0 / 2016-09-11
+
+  * Disable color output on windows by default
+
 # 0.1.2 / 2016-09-11
 
   * Fix gobuilder builds
