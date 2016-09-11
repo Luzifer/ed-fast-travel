@@ -30,6 +30,7 @@ var (
 	cfg = struct {
 		Color          bool   `flag:"color" vardefault:"color" description:"Use color for output"`
 		EDSMDumpPath   string `flag:"data-path" default:"~/.local/share/ed-fast-travel" description:"Path to store EDSM data"`
+		SelfUpdate     bool   `flag:"self-update" default:"false" description:"Update the tool to the latest version"`
 		Silent         bool   `flag:"silent,s" default:"false" description:"Suppress every message except the flight plan"`
 		UpdateData     bool   `flag:"update" default:"false" description:"Fetch latest dump from EDSM"`
 		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
@@ -51,6 +52,11 @@ func init() {
 		os.Exit(0)
 	}
 
+	if cfg.SelfUpdate {
+		selfUpdate()
+		os.Exit(1)
+	}
+
 	var err error
 	cfg.EDSMDumpPath, err = homedir.Expand(cfg.EDSMDumpPath)
 	if err != nil {
@@ -65,7 +71,7 @@ func verboseLog(format string, args ...interface{}) {
 }
 
 func main() {
-	selfUpdate()
+	checkUpdates()
 
 	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, "dump.json")); err != nil || cfg.UpdateData {
 		if err := refreshEDSMData(); err != nil {
@@ -136,16 +142,25 @@ func main() {
 	verboseLog("Calculation shows an overhead of %.2f Ly in comparison to linear distance.", totalFlight-linearDistance)
 }
 
+func checkUpdates() {
+	if hasUpdate, err := autoupdate.New(autoUpdateRepo, autoUpdateLabel).HasUpdate(); err != nil {
+		log.Printf("Could not look for updates: %s", err)
+	} else {
+		if hasUpdate {
+			log.Printf("An update to ed-fast-travel is available. Run %s --self-update to update.", rconfig.Args()[0])
+		}
+	}
+}
+
 func selfUpdate() {
 	if version == "dev" {
 		return
 	}
 
-	updater := autoupdate.New(autoUpdateRepo, autoUpdateLabel)
-	updater.SelfRestart = true
-
-	if err := updater.SingleRun(); err != nil {
-		log.Printf("Could not check for updates.")
+	if err := autoupdate.New(autoUpdateRepo, autoUpdateLabel).SingleRun(); err != nil {
+		log.Printf("Update failed: %s", err)
+	} else {
+		log.Printf("Update successful.")
 	}
 }
 
