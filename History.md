@@ -1,3 +1,7 @@
+# 0.5.0 / 2016-09-11
+
+  * Add autoupdater
+
 # 0.4.0 / 2016-09-11
 
   * Use own strong compressed cache for dump data
