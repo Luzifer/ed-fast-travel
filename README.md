@@ -19,11 +19,23 @@
 
 ## Usage
 
+### Route-Planning
+
 You can download pre-compiled binaries on [GoBuilder](https://gobuilder.me/github.com/Luzifer/ed-fast-travel) for your system. Afterwards you need to execute it using the console / cmd prompt:
 
 [![asciicast](https://asciinema.org/a/7ea5fd8hexx9wy38bcge3er1j.png)](https://asciinema.org/a/7ea5fd8hexx9wy38bcge3er1j?t=12)
 
 As you can see you only need to know from where you're starting and where you're going. The number (500 in above case) is the distance the stops should be calcualated. I used 500 Ly as that's a good distance for the ingame route engine to calculate a more detailed route.
+
+### Updates
+
+`ed-fast-travel` contains an own updater and will print an information if an update is available:
+
+```
+2016/09/11 21:46:09 An update to ed-fast-travel is available. Run ./ed-fast-travel --self-update to update.
+```
+
+### Database Updates
 
 To update the local database with a fresh nightly dump from EDSM just add the flag `--update` when executing the utility:
 
