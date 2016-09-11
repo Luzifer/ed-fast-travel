@@ -21,6 +21,7 @@ const edsmDumpURL = "https://www.edsm.net/dump/systemsWithCoordinates.json"
 
 var (
 	cfg = struct {
+		Color          bool   `flag:"color" vardefault:"color" description:"Use color for output"`
 		EDSMDumpPath   string `flag:"data-path" default:"~/.local/share/ed-fast-travel" description:"Path to store EDSM data"`
 		UpdateData     bool   `flag:"update" default:"false" description:"Fetch latest dump from EDSM"`
 		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
@@ -30,9 +31,12 @@ var (
 )
 
 func init() {
+	rconfig.SetVariableDefaults(defaultSettings)
 	if err := rconfig.Parse(&cfg); err != nil {
 		log.Fatalf("Unable to parse commandline options: %s", err)
 	}
+
+	color.NoColor = !cfg.Color
 
 	if cfg.VersionAndExit {
 		fmt.Printf("ed-fast-travel %s\n", version)
