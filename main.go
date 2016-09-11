@@ -1,9 +1,11 @@
 package main
 
 import (
+	"compress/bzip2"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -17,7 +19,7 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 )
 
-const edsmDumpURL = "https://www.edsm.net/dump/systemsWithCoordinates.json"
+const edsmDumpURL = "http://assets.luzifer.io/systemsWithCoordinates.json.bz2"
 
 var (
 	cfg = struct {
@@ -168,6 +170,24 @@ func refreshEDSMData() error {
 		return err
 	}
 
+	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, "etag.txt")); err == nil {
+		d, err := ioutil.ReadFile(path.Join(cfg.EDSMDumpPath, "etag.txt"))
+		if err != nil {
+			return err
+		}
+		eTag := string(d)
+
+		resp, err := http.Head(edsmDumpURL)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+
+		if resp.Header.Get("ETag") == eTag {
+			return nil
+		}
+	}
+
 	dump, err := os.Create(path.Join(cfg.EDSMDumpPath, "dump.json"))
 	if err != nil {
 		return err
@@ -180,6 +200,12 @@ func refreshEDSMData() error {
 	}
 	defer resp.Body.Close()
 
-	_, err = io.Copy(dump, resp.Body)
+	if err := ioutil.WriteFile(path.Join(cfg.EDSMDumpPath, "etag.txt"), []byte(resp.Header.Get("ETag")), 0644); err != nil {
+		return err
+	}
+
+	bzr := bzip2.NewReader(resp.Body)
+
+	_, err = io.Copy(dump, bzr)
 	return err
 }
