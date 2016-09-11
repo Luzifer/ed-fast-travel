@@ -14,12 +14,17 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Luzifer/gobuilder/autoupdate"
 	"github.com/Luzifer/rconfig"
 	"github.com/fatih/color"
 	homedir "github.com/mitchellh/go-homedir"
 )
 
-const edsmDumpURL = "http://assets.luzifer.io/systemsWithCoordinates.json.bz2"
+const (
+	autoUpdateRepo  = "github.com/Luzifer/ed-fast-travel"
+	autoUpdateLabel = "master"
+	edsmDumpURL     = "http://assets.luzifer.io/systemsWithCoordinates.json.bz2"
+)
 
 var (
 	cfg = struct {
@@ -60,6 +65,8 @@ func verboseLog(format string, args ...interface{}) {
 }
 
 func main() {
+	selfUpdate()
+
 	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, "dump.json")); err != nil || cfg.UpdateData {
 		if err := refreshEDSMData(); err != nil {
 			log.Fatalf("Unable to refresh EDSM data: %s", err)
@@ -127,6 +134,19 @@ func main() {
 	}
 
 	verboseLog("Calculation shows an overhead of %.2f Ly in comparison to linear distance.", totalFlight-linearDistance)
+}
+
+func selfUpdate() {
+	if version == "dev" {
+		return
+	}
+
+	updater := autoupdate.New(autoUpdateRepo, autoUpdateLabel)
+	updater.SelfRestart = true
+
+	if err := updater.SingleRun(); err != nil {
+		log.Printf("Could not check for updates.")
+	}
 }
 
 func getSystemByNearestCoordinate(systems []starSystem, coords starCoordinate, skipSystem starSystem) *starSystem {
