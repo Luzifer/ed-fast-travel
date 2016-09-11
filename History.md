@@ -1,3 +1,7 @@
+# 0.4.0 / 2016-09-11
+
+  * Use own strong compressed cache for dump data
+
 # 0.3.0 / 2016-09-11
 
   * Add flag to silence log ouput
