@@ -143,6 +143,10 @@ func main() {
 }
 
 func checkUpdates() {
+	if version == "dev" {
+		return
+	}
+
 	if hasUpdate, err := autoupdate.New(autoUpdateRepo, autoUpdateLabel).HasUpdate(); err != nil {
 		log.Printf("Could not look for updates: %s", err)
 	} else {
