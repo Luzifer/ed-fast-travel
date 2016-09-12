@@ -24,6 +24,18 @@
 			"Rev": "76d423163af754ff6423d2d9be0057fbf03c57c2"
 		},
 		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "49c024275504f0341e5a9971eb7ba7fa3dc7af40"
+		},
+		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Rev": "527637c0f38a8035d7856bb758e56f7ee2c704a9"
+		},
+		{
 			"ImportPath": "github.com/inconshreveable/go-update",
 			"Rev": "8f6b8b7d0faade910de91da38369cc69c2dd6b98"
 		},
