@@ -4,18 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math"
 	"os"
 	"path"
 	"strings"
-	"time"
 )
 
 type traceResult struct {
-	Progress            float64
-	FlightDistance      float64
-	TotalFlightDistance float64
-	StarSystem          *starSystem
+	FlightDistance      float64     `json:"flight_distance"`
+	Progress            float64     `json:"progress"`
+	Requested           bool        `json:"requested"`
+	StarSystem          *starSystem `json:"star_system"`
+	TotalFlightDistance float64     `json:"total_flight_distance"`
 }
 
 type starSystemDatabase []starSystem
@@ -49,24 +50,50 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 	defer close(rChan)
 	defer close(eChan)
 
-	deadline, deadlineExists := ctx.Deadline()
+	doneChan := make(chan struct{})
+	defer close(doneChan)
+
+	keepRunning := true
+
+	go func() {
+		for {
+			select {
+			case <-doneChan:
+				return
+			case <-ctx.Done():
+				keepRunning = false
+				eChan <- fmt.Errorf("Calculation deadline of %s exceeded.", cfg.WebRouteTimeout)
+			}
+		}
+	}()
+
 	oldStop := a
 
+	rChan <- traceResult{
+		StarSystem: a,
+		Requested:  true,
+	}
+
 	totalFlight := 0.0
-	for a.Coords.DistanceLy(b.Coords) > 0 && (!deadlineExists || deadline.After(time.Now())) {
+	for oldStop.Coords.DistanceLy(b.Coords) > 0 && keepRunning {
 		stop := systems.GetSystemByNearestCoordinate(oldStop.Coords.PartVectorTarget(b.Coords, stopDistance), *oldStop)
 		dist := oldStop.Coords.DistanceLy(stop.Coords)
 		totalFlight += dist
 
+		isRequested := stop.ID == b.ID
+
 		rChan <- traceResult{
-			Progress:            (a.Coords.DistanceLy(b.Coords) - stop.Coords.DistanceLy(b.Coords)) / a.Coords.DistanceLy(b.Coords),
 			FlightDistance:      dist,
-			TotalFlightDistance: totalFlight,
+			Progress:            (a.Coords.DistanceLy(b.Coords) - stop.Coords.DistanceLy(b.Coords)) / a.Coords.DistanceLy(b.Coords),
+			Requested:           isRequested,
 			StarSystem:          stop,
+			TotalFlightDistance: totalFlight,
 		}
 
 		oldStop = stop
 	}
+
+	doneChan <- struct{}{}
 }
 
 func (systems starSystemDatabase) GetSystemByNearestCoordinate(coords starCoordinate, skipSystem starSystem) *starSystem {
@@ -86,6 +113,16 @@ func (systems starSystemDatabase) GetSystemByNearestCoordinate(coords starCoordi
 func (systems starSystemDatabase) GetSystemByName(name string) *starSystem {
 	for i := range systems {
 		if strings.ToLower(systems[i].Name) == strings.ToLower(name) {
+			return &systems[i]
+		}
+	}
+
+	return nil
+}
+
+func (systems starSystemDatabase) GetSystemByID(id int64) *starSystem {
+	for i := range systems {
+		if systems[i].ID == id {
 			return &systems[i]
 		}
 	}

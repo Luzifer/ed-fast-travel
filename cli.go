@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"time"
 
 	"github.com/Luzifer/rconfig"
 	"github.com/fatih/color"
@@ -18,13 +17,6 @@ func doCLICalculation() {
 	stopDistance, err := strconv.ParseFloat(rconfig.Args()[3], 64)
 	if err != nil {
 		log.Fatalf("Please use a valid number in format 0.00 as distance")
-	}
-
-	// Load database
-	verboseLog("Loading database...")
-	starSystems, err := loadStarSystems()
-	if err != nil {
-		log.Fatalf("Could not load star systems from dump: %s", err)
 	}
 
 	// Search system
@@ -48,13 +40,10 @@ func doCLICalculation() {
 	verboseLog("Linear distance between that systems is %.2f Ly",
 		linearDistance)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
-	defer cancel()
-
 	// Calculate steps
 	stopNo := 1
 	totalFlight := 0.0
-	rChan, eChan := starSystems.CalculateRoute(ctx, start, target, stopDistance)
+	rChan, eChan := starSystems.CalculateRoute(context.Background(), start, target, stopDistance)
 
 	go func(eChan <-chan error) {
 		for {

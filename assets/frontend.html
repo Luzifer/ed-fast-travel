@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>ed-fast-travel - Elite: Dangerous long-distance travel planner</title>
+
+    <!-- Bootstrap -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!--<link href="//bootswatch.com/paper/bootstrap.min.css" rel="stylesheet">-->
+    <link href="//bootswatch.com/flatly/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+    <style>
+      body, input, button { font-size: 15px; }
+      .right { text-align: right; }
+      .form-group { margin-bottom: 0; }
+      .copy-system { cursor: pointer; } 
+      .coordinates { color: rgba(44, 62, 80, 0.4); }
+      body.no-coords .coordinates { display: none; }
+      .progress { margin-top: 6px; margin-bottom: 0px; }
+      #warning { display: none; }
+    </style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">ed-fast-travel</a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a  data-toggle="modal" data-target="#settings" type="button"><i class="fa fa-gear" aria-hidden="true"></i> Settings</a></li>
+						<li><a href="#" id="trash-route"><i class="fa fa-trash" aria-hidden="true"></i> Clear Route</a></li>
+            {{ if not .disableSoftwareControl }}
+						<li><a  id="update-system"><i class="fa fa-download" aria-hidden="true"></i> Update Software</a></li>
+						<li><a  id="shutdown-system"><i class="fa fa-power-off" aria-hidden="true"></i> Shutdown</a></li>
+            {{ end }}
+						<li><a  data-toggle="modal" data-target="#info" type="button" id="update-system"><i class="fa fa-info" aria-hidden="true"></i> Info</a></li>
+					</ul>
+				</div><!-- /.navbar-collapse -->
+			</div><!-- /.container-fluid -->
+		</nav>
+
+		<div class="container">
+
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <div class="alert alert-warning" role="alert" id="warning">
+            <strong>Warning!</strong> <span id="warning-text"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <table class="table table-striped">
+            <tr>
+              <th class="col-md-1 right">#</th>
+              <th class="col-md-8">System</th>
+              <th class="right">Distance</th>
+              <th class="right">Total Distance</th>
+            </tr>
+
+            <!--
+            <tr>
+              <td class="right">&nbsp;</td>
+              <td>Veil West Sector DL-Y d68</td>
+              <td class="right">&nbsp;</td>
+              <td class="right">&nbsp;</td>
+            </tr>
+
+            <tr>
+              <td class="right">1</td>
+              <td title="Click to copy system name" class="copy-system">
+                <span class="copy-text">Prooe Drye ME-K c11-15</span>
+                <span class="coordinates">(-1807.00000 / -183.87500 / 709.50000)</span>
+              </td>
+              <td class="right">501.61 Ly</td>
+              <td class="right">501.61 Ly</td>
+            </tr>
+
+            <tr>
+              <td class="right">2</td>
+              <td title="Click to copy system name" class="copy-system">
+                <span class="copy-text">Prooe Drye EH-U e3-16</span>
+                <span class="coordinates">(-2216.15625 / -169.78125 / 987.34375)</span>
+              </td>
+              <td class="right">494.78 Ly</td>
+              <td class="right">996.39 Ly</td>
+            </tr>
+            -->
+
+            <tr id="inputSystemRow">
+              <td>&nbsp;</td>
+              <td>
+                <div class="form-horizontal">
+                  <div class="form-group" id="add-system-group">
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <i class="fa fa-pencil" id="add-system-icon" aria-hidden="true"></i>
+                      </div>
+                      <input type="text" class="form-control" id="inputSystem" placeholder="System Name">
+                      <div class="input-group-btn">
+                        <button id="add-system-btn" class="btn btn-default" disabled>Add</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr>
+          </table>
+        </div> <!-- /.col-md-12 -->
+      </div> <!-- /.row -->
+
+    </div> <!-- /.container -->
+
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="settings">
+			<div class="modal-dialog modal-sm" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="gridSystemModalLabel">Settings</h4>
+					</div>
+					<div class="modal-body">
+            <div id="settings-form" class="form">
+
+              <div class="form-group">
+                <label for="stop-range">Distance between stops</label>
+                <div class="input-group">
+                  <input type="number" class="form-control" id="stop-range" value="500">
+                  <div class="input-group-addon">Ly</div>
+                </div>
+              </div>
+
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="show-coords"> Show coordinates
+                </label>
+              </div>
+
+            </div>
+					</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="settings-save">Save</button>
+          </div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="info">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="gridSystemModalLabel">Information</h4>
+					</div>
+					<div class="modal-body">
+            <p>
+						  <strong>ed-fast-travel {{ .version }}</strong>
+            </p>
+            <ul>
+              <li>Listed in <a href="http://edcodex.info/?m=tools&entry=399">EDCodex</a>
+              <li>System data from <a href="https://www.edsm.net/">EDSM</a>
+              <li>Released under <a href="https://github.com/Luzifer/ed-fast-travel/blob/master/LICENSE">Apache 2.0 License</a>
+              <li>Source code available on <a href="https://github.com/Luzifer/ed-fast-travel">GitHub</a>
+              <li>Maintainer: <a href="https://luzifer.io/">Knut Ahlers</a> (CMDR Luziferus)
+            </ul>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="/assets/application.js"></script>
+  </body>
+</html>

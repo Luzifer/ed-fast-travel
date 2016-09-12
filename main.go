@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 
 	"github.com/Luzifer/rconfig"
 	"github.com/fatih/color"
@@ -25,16 +26,21 @@ const (
 
 var (
 	cfg = struct {
-		Color          bool   `flag:"color" vardefault:"color" description:"Use color for output"`
-		EDSMDumpPath   string `flag:"data-path" default:"~/.local/share/ed-fast-travel" description:"Path to store EDSM data"`
-		Listen         string `flag:"listen" default:":3000" description:"IP/Port to listen on when starting in web mode"`
-		SelfUpdate     bool   `flag:"self-update" default:"false" description:"Update the tool to the latest version"`
-		Silent         bool   `flag:"silent,s" default:"false" description:"Suppress every message except the flight plan"`
-		UpdateData     bool   `flag:"update" default:"false" description:"Fetch latest dump from EDSM"`
-		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
+		Color                  bool          `flag:"color" vardefault:"color" description:"Use color for output"`
+		DisableSoftwareControl bool          `flag:"disable-software-control" default:"false" description:"Do not let web-users control update / shutdown"`
+		EDSMDumpPath           string        `flag:"data-path" default:"~/.local/share/ed-fast-travel" description:"Path to store EDSM data"`
+		Listen                 string        `flag:"listen" default:":3000" description:"IP/Port to listen on when starting in web mode"`
+		SelfUpdate             bool          `flag:"self-update" default:"false" description:"Update the tool to the latest version"`
+		Silent                 bool          `flag:"silent,s" default:"false" description:"Suppress every message except the flight plan"`
+		UpdateData             bool          `flag:"update" default:"false" description:"Fetch latest dump from EDSM"`
+		VersionAndExit         bool          `flag:"version" default:"false" description:"Prints current version and exits"`
+		WebRouteTimeout        time.Duration `flag:"web-route-timeout" default:"10m" description:"Timout for route calculations requested via web interface"`
+		WebRouteStopMin        float64       `flag:"web-route-stop-min" default:"100" description:"Min distance between stops"`
 	}{}
 
 	version = "dev"
+
+	starSystems starSystemDatabase
 )
 
 func init() {
@@ -83,10 +89,19 @@ func main() {
 		}
 	}
 
+	// Load database
+	verboseLog("Loading database...")
+	var err error
+	starSystems, err = loadStarSystems()
+	if err != nil {
+		log.Fatalf("Could not load star systems from dump: %s", err)
+	}
+
 	switch len(rconfig.Args()) {
 	case 4:
 		doCLICalculation()
 	case 1:
+		startWebService()
 	default:
 		printHelp()
 		os.Exit(1)
