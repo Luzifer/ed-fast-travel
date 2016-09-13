@@ -1,3 +1,7 @@
+# 0.8.1 / 2016-09-13
+
+  * Fix: Respect distance when caching
+
 # 0.8.0 / 2016-09-13
 
   * Switch to binary storage format
