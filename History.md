@@ -1,3 +1,7 @@
+# 0.8.0 / 2016-09-13
+
+  * Switch to binary storage format
+
 # 0.7.0 / 2016-09-13
 
   * Add route caching
