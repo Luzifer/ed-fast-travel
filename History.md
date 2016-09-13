@@ -1,3 +1,8 @@
+# 0.9.0 / 2016-09-13
+
+  * Add german translation
+  * Add i18n framework for web frontend
+
 # 0.8.2 / 2016-09-13
 
   * Fix: File format was missing argument
