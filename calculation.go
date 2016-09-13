@@ -48,15 +48,15 @@ func (systems starSystemDatabase) CalculateRoute(ctx context.Context, a, b *star
 }
 
 func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan chan traceResult, eChan chan error, a, b *starSystem, stopDistance float64) {
-	defer close(rChan)
-	defer close(eChan)
-
 	doneChan := make(chan struct{})
 	defer close(doneChan)
 
 	keepRunning := true
 
 	go func() {
+		defer close(rChan)
+		defer close(eChan)
+
 		for {
 			select {
 			case <-doneChan:
