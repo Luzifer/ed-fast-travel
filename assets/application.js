@@ -215,6 +215,9 @@
 
   handleHashChange = function() {
     var ct, msg, pbar, request_id, results, start, target, tmp;
+    if (location.hash.substring(1) === "") {
+      return;
+    }
     $('.auto-added').remove();
     route = location.hash.substring(1).split(',');
     tmp = route;
