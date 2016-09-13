@@ -196,7 +196,7 @@
               <li>
                 {{T "frontend_modal_info_source_code"}}
                 <a href="https://github.com/Luzifer/ed-fast-travel">GitHub</a>
-              <li>
+              </li>
               <li>
                 {{T "frontend_modal_info_maintainer"}}:
                 <a href="https://luzifer.io/">Knut Ahlers</a> (CMDR Luziferus)
@@ -214,10 +214,12 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.12/clipboard.min.js"></script>
 
-    <script type="javascript">
-      translations = {
-        'warn_communication_lost': '{{T "warn_communication_lost"}}',
-      }
+    <script>
+      $(function(){
+        window.translations = {
+          'warn_communication_lost': '{{T "warn_communication_lost"}}',
+        };
+      });
     </script>
     <script src="/assets/application.js"></script>
   </body>

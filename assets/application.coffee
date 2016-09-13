@@ -115,7 +115,7 @@ spawnSocket = () ->
 
   sock = new WebSocket(endpoint)
   sock.onclose = ->
-    setWarning translations["warn_communication_lost"]
+    setWarning window.translations["warn_communication_lost"]
   sock.onmessage = handleRouteResult
   sock.onopen = () ->
     if firstConnect

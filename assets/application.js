@@ -153,7 +153,7 @@
     })();
     sock = new WebSocket(endpoint);
     sock.onclose = function() {
-      return setWarning(translations["warn_communication_lost"]);
+      return setWarning(window.translations["warn_communication_lost"]);
     };
     sock.onmessage = handleRouteResult;
     return sock.onopen = function() {

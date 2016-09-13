@@ -30,7 +30,7 @@
   translation: Einstellungen
 
 - id: frontend_btn_clear_route
-  translation: Route löschenRoute löschenRoute löschenRoute löschen
+  translation: Route löschen
 
 - id: frontend_btn_update
   translation: Server aktualisieren
