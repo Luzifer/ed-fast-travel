@@ -12,6 +12,7 @@ $ ->
 bindUI = () ->
   $('#settings-save').bind 'click', saveSettings
   $('#inputSystem').bind 'input', handleSystemInputEvent
+  $('#inputSystem').bind 'keyup', handleSystemKeyUpEvent
   $('#add-system-btn').bind 'click', handleSystemAdd
   $('#update-system').bind 'click', handleUpdate
   $('#shutdown-system').bind 'click', handleShutdown
@@ -71,6 +72,10 @@ handleSystemInputEvent = () ->
 
   if $('#inputSystem').val() != ''
     searchTimer = window.setTimeout searchSystemByName, 1500
+
+handleSystemKeyUpEvent = (evt) ->
+  if evt.keyCode == 13
+    $('#add-system-btn').trigger 'click'
 
 searchSystemByName = () ->
   setInputState 'searching'
