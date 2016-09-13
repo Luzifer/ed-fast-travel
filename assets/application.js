@@ -129,6 +129,9 @@
     if ($('#add-system-btn').prop('disabled' || systemCache === null)) {
       return;
     }
+    if (route[0] === '' && route.length === 1) {
+      route = [];
+    }
     if (route[route.length - 1] !== systemCache.id) {
       route.push(systemCache.id);
       location.hash = route.join(',');
