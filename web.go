@@ -77,6 +77,7 @@ func startWebService() {
 
 	r.HandleFunc("/api/control/shutdown", handleShutdown)
 	r.HandleFunc("/api/control/update", handleUpdate)
+	r.HandleFunc("/api/control/update-database", handleUpdateDatabase)
 
 	log.Fatalf("Unable to listen for web connections: %s", http.ListenAndServe(cfg.Listen, r))
 }
@@ -176,6 +177,29 @@ func handleUpdate(res http.ResponseWriter, r *http.Request) {
 			ErrorMessage: T("warn_service_update_success"),
 		}.Send(res, false)
 	}
+}
+
+func handleUpdateDatabase(res http.ResponseWriter, r *http.Request) {
+	T := getTranslator(r)
+	if cfg.DisableSoftwareControl {
+		http.Error(res, "Controls are disabled", http.StatusForbidden)
+		return
+	}
+
+	if err := refreshEDSMData(); err != nil {
+		jsonResponse{
+			Success:      false,
+			ErrorMessage: T("warn_database_update_failed"),
+		}.Send(res, false)
+
+		log.Printf("Database update failed: %s", err)
+		return
+	}
+
+	jsonResponse{
+		Success:      true,
+		ErrorMessage: T("warn_database_update_success"),
+	}.Send(res, false)
 }
 
 func handleSystemByName(res http.ResponseWriter, r *http.Request) {

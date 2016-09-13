@@ -23,6 +23,12 @@
 - id: warn_communication_lost
   translation: Die Kommunikation mit dem Server wurde unterbrochen. Bitte die Seite neu laden um Routen zu berechnen.
 
+- id: warn_database_update_failed
+  translation: Datenbankaktualisierung fehlgeschlagen. Für mehr Details bitte ins Log schauen.
+
+- id: warn_database_update_success
+  translation: Datenbankaktualisierung erfolgreich. Die Daten stehen zur Verfügung wenn die aktuellen Berechnungen abgeschlossen sind.
+
 - id: frontend_title
   translation: "ed-fast-travel - Elite: Dangerous Routenplaner für Langstrecken"
 
@@ -31,6 +37,9 @@
 
 - id: frontend_btn_clear_route
   translation: Route löschen
+
+- id: frontend_btn_update_data
+  translation: Datenbank aktualisieren
 
 - id: frontend_btn_update
   translation: Server aktualisieren

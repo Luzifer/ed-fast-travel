@@ -23,6 +23,12 @@
 - id: warn_communication_lost
   translation: Communication with server ended unexpectedly. Please reload this page to continue your calculation.
 
+- id: warn_database_update_failed
+  translation: Database update failed. For more details please see log output.
+
+- id: warn_database_update_success
+  translation: Database update successful. Database will be re-read as soon as calculations are finished.
+
 - id: frontend_title
   translation: "ed-fast-travel - Elite: Dangerous long-distance travel planner"
 
@@ -31,6 +37,9 @@
 
 - id: frontend_btn_clear_route
   translation: Clear Route
+
+- id: frontend_btn_update_data
+  translation: Update Database
 
 - id: frontend_btn_update
   translation: Update Software

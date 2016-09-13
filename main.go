@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sync"
 	"time"
 
 	"github.com/Luzifer/rconfig"
@@ -44,8 +45,9 @@ var (
 
 	version = "dev"
 
-	starSystems starSystemDatabase
-	cache       routeCache
+	starSystems     starSystemDatabase
+	starSystemsLock sync.RWMutex
+	cache           routeCache
 )
 
 func init() {
@@ -170,5 +172,25 @@ func refreshEDSMData() error {
 		return err
 	}
 
-	return ioutil.WriteFile(path.Join(cfg.EDSMDumpPath, "etag.txt"), []byte(resp.Header.Get("ETag")), 0644)
+	if err := ioutil.WriteFile(path.Join(cfg.EDSMDumpPath, "etag.txt"), []byte(resp.Header.Get("ETag")), 0644); err != nil {
+		return err
+	}
+
+	if !cfg.SelfUpdate {
+		go func() {
+			starSystemsLock.Lock()
+			defer starSystemsLock.Unlock()
+
+			// Update was triggered from web interface
+			starSystems, err = loadStarSystems()
+			if err != nil {
+				log.Fatalf("Could not load star systems from dump: %s", err)
+				return
+			}
+
+			log.Printf("Database reloaded as requested from web interface.")
+		}()
+	}
+
+	return nil
 }

@@ -15,6 +15,7 @@ bindUI = () ->
   $('#inputSystem').bind 'keyup', handleSystemKeyUpEvent
   $('#add-system-btn').bind 'click', handleSystemAdd
   $('#update-system').bind 'click', handleUpdate
+  $('#update-database').bind 'click', handleUpdateDatabase
   $('#shutdown-system').bind 'click', handleShutdown
   $(window).bind 'hashchange', handleHashChange
 
@@ -236,6 +237,10 @@ handleShutdown = () ->
   
 handleUpdate = () ->
   $.get '/api/control/update', (data) ->
+    setWarning data.error_message
+
+handleUpdateDatabase = () ->
+  $.get '/api/control/update-database', (data) ->
     setWarning data.error_message
 
 toggleButtonClass = (button, remove, add) ->

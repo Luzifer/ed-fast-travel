@@ -55,6 +55,9 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 	doneChan := make(chan struct{})
 	defer close(doneChan)
 
+	starSystemsLock.RLock()
+	defer starSystemsLock.RUnlock()
+
 	keepRunning := true
 
 	go func() {
