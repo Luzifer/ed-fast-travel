@@ -3,7 +3,7 @@ package main
 //go:generate go-bindata -pkg $GOPACKAGE -o assets.go assets/
 
 import (
-	"compress/bzip2"
+	"compress/gzip"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -21,7 +21,8 @@ import (
 const (
 	autoUpdateRepo  = "github.com/Luzifer/ed-fast-travel"
 	autoUpdateLabel = "master"
-	edsmDumpURL     = "http://assets.luzifer.io/systemsWithCoordinates.json.bz2"
+	edsmDumpURL     = "http://assets.luzifer.io/systemsWithCoordinates.bin.gz"
+	originalDumpURL = "https://www.edsm.net/dump/systemsWithCoordinates.json"
 )
 
 var (
@@ -31,6 +32,7 @@ var (
 		Color                  bool          `flag:"color" vardefault:"color" description:"Use color for output"`
 		DisableSoftwareControl bool          `flag:"disable-software-control" default:"false" description:"Do not let web-users control update / shutdown"`
 		EDSMDumpPath           string        `flag:"data-path" default:"~/.local/share/ed-fast-travel" description:"Path to store EDSM data"`
+		Generate               bool          `flag:"generate-database" default:"false" description:"Instead of downloading the database generate it from original dump"`
 		Listen                 string        `flag:"listen" default:":3000" description:"IP/Port to listen on when starting in web mode"`
 		SelfUpdate             bool          `flag:"self-update" default:"false" description:"Update the tool to the latest version"`
 		Silent                 bool          `flag:"silent,s" default:"false" description:"Suppress every message except the flight plan"`
@@ -91,7 +93,13 @@ func printHelp() {
 func main() {
 	checkUpdates()
 
-	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, "dump.json")); err != nil || cfg.UpdateData {
+	if cfg.Generate {
+		if err := generateGOBDatabase(); err != nil {
+			log.Fatalf("Could not generate database: %s", err)
+		}
+	}
+
+	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, "dump.bin")); err != nil || cfg.UpdateData {
 		if err := refreshEDSMData(); err != nil {
 			log.Fatalf("Unable to refresh EDSM data: %s", err)
 		}
@@ -140,7 +148,7 @@ func refreshEDSMData() error {
 		}
 	}
 
-	dump, err := os.Create(path.Join(cfg.EDSMDumpPath, "dump.json"))
+	dump, err := os.Create(path.Join(cfg.EDSMDumpPath, "dump.bin"))
 	if err != nil {
 		return err
 	}
@@ -152,12 +160,15 @@ func refreshEDSMData() error {
 	}
 	defer resp.Body.Close()
 
-	if err := ioutil.WriteFile(path.Join(cfg.EDSMDumpPath, "etag.txt"), []byte(resp.Header.Get("ETag")), 0644); err != nil {
+	cdata, err := gzip.NewReader(resp.Body)
+	if err != nil {
 		return err
 	}
 
-	bzr := bzip2.NewReader(resp.Body)
+	_, err = io.Copy(dump, cdata)
+	if err != nil {
+		return err
+	}
 
-	_, err = io.Copy(dump, bzr)
-	return err
+	return ioutil.WriteFile(path.Join(cfg.EDSMDumpPath, "etag.txt"), []byte(resp.Header.Get("ETag")), 0644)
 }

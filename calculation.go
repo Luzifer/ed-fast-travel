@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/gob"
 	"errors"
 	"fmt"
 	"log"
@@ -11,6 +11,10 @@ import (
 	"path"
 	"strings"
 )
+
+func init() {
+	gob.Register(starSystemDatabase{})
+}
 
 type traceResult struct {
 	FlightDistance      float64     `json:"flight_distance"`
@@ -24,13 +28,13 @@ type starSystemDatabase []starSystem
 
 func loadStarSystems() (starSystemDatabase, error) {
 	starSystems := starSystemDatabase{}
-	dump, err := os.Open(path.Join(cfg.EDSMDumpPath, "dump.json"))
+	dump, err := os.Open(path.Join(cfg.EDSMDumpPath, "dump.bin"))
 	if err != nil {
 		return nil, err
 	}
 	defer dump.Close()
 
-	return starSystems, json.NewDecoder(dump).Decode(&starSystems)
+	return starSystems, gob.NewDecoder(dump).Decode(&starSystems)
 }
 
 func (systems starSystemDatabase) CalculateRoute(ctx context.Context, a, b *starSystem, stopDistance float64) (<-chan traceResult, <-chan error) {
