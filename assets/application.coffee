@@ -170,11 +170,10 @@ compileCoordinates = (coords) ->
 
 handleHashChange = () ->
   $('.auto-added').remove()
+  route = location.hash.substring(1).split(',')
 
   if location.hash.substring(1) == ""
     return
-
-  route = location.hash.substring(1).split(',')
 
   tmp = route
   ct = 0

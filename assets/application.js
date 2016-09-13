@@ -223,10 +223,10 @@
   handleHashChange = function() {
     var ct, msg, pbar, request_id, results, start, target, tmp;
     $('.auto-added').remove();
+    route = location.hash.substring(1).split(',');
     if (location.hash.substring(1) === "") {
       return;
     }
-    route = location.hash.substring(1).split(',');
     tmp = route;
     ct = 0;
     results = [];
