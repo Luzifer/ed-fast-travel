@@ -72,7 +72,7 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 		}
 	}()
 
-	if route, err := cache.GetRoute(*a, *b); err == nil {
+	if route, err := cache.GetRoute(*a, *b, int64(stopDistance)); err == nil {
 		for _, tr := range route {
 			rChan <- tr
 
@@ -115,7 +115,7 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 		oldStop = stop
 	}
 
-	if err := cache.StoreRoute(*a, *b, cachedRoute); err != nil {
+	if err := cache.StoreRoute(*a, *b, int64(stopDistance), cachedRoute); err != nil {
 		log.Printf("Could not cache route: %s", err)
 	}
 

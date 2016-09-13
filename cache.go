@@ -16,8 +16,8 @@ import (
 var routeNotFoundError = errors.New("Route not found in cache")
 
 type routeCache interface {
-	StoreRoute(from, to starSystem, hops []traceResult) error
-	GetRoute(from, to starSystem) ([]traceResult, error)
+	StoreRoute(from, to starSystem, distance int64, hops []traceResult) error
+	GetRoute(from, to starSystem, distance int64) ([]traceResult, error)
 }
 
 func getCache(uri string) (routeCache, error) {
@@ -48,8 +48,8 @@ func newFileSystemCache(storePath string) (*fileSystemCache, error) {
 	}
 }
 
-func (f fileSystemCache) StoreRoute(from, to starSystem, hops []traceResult) error {
-	storePath := f.getFilename(from, to)
+func (f fileSystemCache) StoreRoute(from, to starSystem, distance int64, hops []traceResult) error {
+	storePath := f.getFilename(from, to, distance)
 
 	if err := os.MkdirAll(f.path, 0755); err != nil {
 		return err
@@ -64,8 +64,8 @@ func (f fileSystemCache) StoreRoute(from, to starSystem, hops []traceResult) err
 	return json.NewEncoder(fp).Encode(hops)
 }
 
-func (f fileSystemCache) GetRoute(from, to starSystem) ([]traceResult, error) {
-	storePath := f.getFilename(from, to)
+func (f fileSystemCache) GetRoute(from, to starSystem, distance int64) ([]traceResult, error) {
+	storePath := f.getFilename(from, to, distance)
 
 	if stat, err := os.Stat(storePath); err != nil {
 		return nil, routeNotFoundError
@@ -84,11 +84,13 @@ func (f fileSystemCache) GetRoute(from, to starSystem) ([]traceResult, error) {
 	return result, json.NewDecoder(fp).Decode(&result)
 }
 
-func (f fileSystemCache) getFilename(from, to starSystem) string {
-	return path.Join(f.path, fmt.Sprintf("%d_%d.json", from.ID, to.ID))
+func (f fileSystemCache) getFilename(from, to starSystem, distance int64) string {
+	return path.Join(f.path, fmt.Sprintf("%d_%d_%d.json", from.ID, to.ID))
 }
 
 type noCache struct{}
 
-func (n noCache) StoreRoute(from, to starSystem, hops []traceResult) error { return nil }
-func (n noCache) GetRoute(from, to starSystem) ([]traceResult, error)      { return nil, routeNotFoundError }
+func (n noCache) StoreRoute(from, to starSystem, distance int64, hops []traceResult) error { return nil }
+func (n noCache) GetRoute(from, to starSystem, distance int64) ([]traceResult, error) {
+	return nil, routeNotFoundError
+}
