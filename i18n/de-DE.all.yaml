@@ -1,0 +1,90 @@
+---
+- id: warn_service_will_shutdown
+  translation: Der Server wird jetzt beendet. Bitte dieses Fenster schließen.
+
+- id: warn_no_new_version_found
+  translation: Es wurde keine neue Version gefunden.
+
+- id: warn_service_update_success
+  translation: Die neue Version wurde heruntergeladen. Bitte den Server neu starten.
+
+- id: warn_too_few_characers
+  translation: Du hast zu wenige Zeichen eingegeben.
+
+- id: warn_no_matching_system_found
+  translation: Es wurde kein eindeutiges Resultat für deine System-Suche gefunden.
+
+- id: warn_required_field_missing
+  translation: Es fehlt eine notwendige Information.
+
+- id: warn_stop_distance_too_small
+  translation: 'Distanz zwischen Navigationspunkten darf nicht unter {{.WebRouteStopMin | printf "%.0f"}} Ly liegen.'
+
+- id: warn_communication_lost
+  translation: Die Kommunikation mit dem Server wurde unterbrochen. Bitte die Seite neu laden um Routen zu berechnen.
+
+- id: frontend_title
+  translation: "ed-fast-travel - Elite: Dangerous Routenplaner für Langstrecken"
+
+- id: frontend_btn_settings
+  translation: Einstellungen
+
+- id: frontend_btn_clear_route
+  translation: Route löschenRoute löschenRoute löschenRoute löschen
+
+- id: frontend_btn_update
+  translation: Server aktualisieren
+
+- id: frontend_btn_shutdown
+  translation: Server beenden
+
+- id: frontend_btn_info
+  translation: Info
+
+- id: frontend_warning_prefix
+  translation: Achtung!
+
+- id: frontend_table_system
+  translation: System
+
+- id: frontend_table_distance
+  translation: Entfernung
+
+- id: frontend_table_total_distance
+  translation: Gesamtentfernung
+
+- id: frontend_input_system_name
+  translation: Name des Systems
+
+- id: frontend_btn_add
+  translation: Hinzufügen
+
+- id: frontend_modal_title_settings
+  translation: Einstellungen
+
+- id: frontend_input_label_stoprange
+  translation: Distanz zwischen Navigationspunkten
+
+- id: frontend_input_label_showcoords
+  translation: Koordinaten anzeigen
+
+- id: frontend_btn_save
+  translation: Speichern
+
+- id: frontend_modal_title_info
+  translation: Information
+
+- id: frontend_modal_info_listed
+  translation: Gelistet auf
+
+- id: frontend_modal_info_system_data_from
+  translation: System Daten von
+
+- id: frontend_modal_info_released_under
+  translation: Veröffentlicht unter
+
+- id: frontend_modal_info_source_code
+  translation: Quellcode verfügbar auf
+
+- id: frontend_modal_info_maintainer
+  translation: Entwickler

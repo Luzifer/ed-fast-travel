@@ -9,6 +9,7 @@ import (
 
 var (
 	availableLanuages = []string{
+		"de-DE",
 		"en-US",
 	}
 )
