@@ -148,6 +148,12 @@ handleRouteResult = (evt) ->
   $(editRow).find('.coordinates').text(compileCoordinates(data.result.star_system.coords))
   $(editRow).find('.flight_distance').text("#{data.result.flight_distance.toFixed(2)} Ly")
   $(editRow).find('.total_flight_distance').text("#{data.result.total_flight_distance.toFixed(2)} Ly")
+  $(editRow).find('.clip').attr 'data-clipboard-text', data.result.star_system.name
+  clip = new Clipboard $(editRow).find('.clip')[0]
+  clip.on 'success', (e) ->
+    toggleButtonClass e.trigger, 'btn-default', 'btn-success'
+    delay 1500, () ->
+      toggleButtonClass e.trigger, 'btn-success', 'btn-default'
 
   if data.result.progress < 1
     $(pbar).find('.progress-bar').css('width', "#{data.result.progress * 100}%")
@@ -202,8 +208,9 @@ getProgressBar = () ->
 getSystemLine = () ->
   $('<tr class="auto-added">
        <td class="right stop_no"></td>
-       <td title="Click to copy system name" class="copy-system">
-         <span class="copy-text system_name"></span>
+       <td>
+         <button class="btn btn-default btn-xs clip"><i class="fa fa-clipboard" aria-hidden="true"></i></button>
+         <span class="system_name"></span>
          <span class="coordinates"></span>
        </td>
        <td class="right flight_distance"></td>
@@ -218,3 +225,9 @@ handleUpdate = () ->
   $.get '/api/control/update', (data) ->
     setWarning data.error_message
 
+toggleButtonClass = (button, remove, add) ->
+  $(button).removeClass remove
+  $(button).addClass add
+
+delay = (time, fkt) ->
+  window.setTimeout fkt, time
