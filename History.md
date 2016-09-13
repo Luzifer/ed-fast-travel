@@ -1,3 +1,8 @@
+# 0.7.0 / 2016-09-13
+
+  * Add route caching
+  * Implement web interface
+
 # 0.6.0 / 2016-09-11
 
   * Disable update check when using version built from source
