@@ -85,7 +85,7 @@ func (f fileSystemCache) GetRoute(from, to starSystem, distance int64) ([]traceR
 }
 
 func (f fileSystemCache) getFilename(from, to starSystem, distance int64) string {
-	return path.Join(f.path, fmt.Sprintf("%d_%d_%d.json", from.ID, to.ID))
+	return path.Join(f.path, fmt.Sprintf("%d_%d_%d.json", from.ID, to.ID, distance))
 }
 
 type noCache struct{}
