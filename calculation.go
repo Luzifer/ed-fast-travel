@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"os"
 	"path"
@@ -67,12 +68,26 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 		}
 	}()
 
+	if route, err := cache.GetRoute(*a, *b); err == nil {
+		for _, tr := range route {
+			rChan <- tr
+
+			if !keepRunning {
+				break
+			}
+		}
+		return
+	}
+
+	cachedRoute := []traceResult{}
 	oldStop := a
 
-	rChan <- traceResult{
+	t := traceResult{
 		StarSystem: a,
 		Requested:  true,
 	}
+	rChan <- t
+	cachedRoute = append(cachedRoute, t)
 
 	totalFlight := 0.0
 	for oldStop.Coords.DistanceLy(b.Coords) > 0 && keepRunning {
@@ -82,7 +97,7 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 
 		isRequested := stop.ID == b.ID
 
-		rChan <- traceResult{
+		t = traceResult{
 			FlightDistance:      dist,
 			Progress:            (a.Coords.DistanceLy(b.Coords) - stop.Coords.DistanceLy(b.Coords)) / a.Coords.DistanceLy(b.Coords),
 			Requested:           isRequested,
@@ -90,7 +105,14 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 			TotalFlightDistance: totalFlight,
 		}
 
+		rChan <- t
+		cachedRoute = append(cachedRoute, t)
+
 		oldStop = stop
+	}
+
+	if err := cache.StoreRoute(*a, *b, cachedRoute); err != nil {
+		log.Printf("Could not cache route: %s", err)
 	}
 
 	doneChan <- struct{}{}

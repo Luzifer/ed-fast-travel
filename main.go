@@ -26,6 +26,8 @@ const (
 
 var (
 	cfg = struct {
+		CacheURI               string        `flag:"cache" default:"file://~/.local/share/ed-fast-travel/cache" description:"Cache to use for route caching"`
+		CacheTime              time.Duration `flag:"cache-time" default:"1h" description:"How long to cache routes"`
 		Color                  bool          `flag:"color" vardefault:"color" description:"Use color for output"`
 		DisableSoftwareControl bool          `flag:"disable-software-control" default:"false" description:"Do not let web-users control update / shutdown"`
 		EDSMDumpPath           string        `flag:"data-path" default:"~/.local/share/ed-fast-travel" description:"Path to store EDSM data"`
@@ -41,6 +43,7 @@ var (
 	version = "dev"
 
 	starSystems starSystemDatabase
+	cache       routeCache
 )
 
 func init() {
@@ -65,6 +68,11 @@ func init() {
 	cfg.EDSMDumpPath, err = homedir.Expand(cfg.EDSMDumpPath)
 	if err != nil {
 		log.Fatalf("Could not expand data-path: %s", err)
+	}
+
+	cache, err = getCache(cfg.CacheURI)
+	if err != nil {
+		log.Fatalf("Could not find specified caching method")
 	}
 }
 
