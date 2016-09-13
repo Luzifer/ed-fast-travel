@@ -153,7 +153,7 @@
     })();
     sock = new WebSocket(endpoint);
     sock.onclose = function() {
-      return setWarning('Communication with server ended unexpectedly. Please reload this page to continue your calculation.');
+      return setWarning(translations["warn_communication_lost"]);
     };
     sock.onmessage = handleRouteResult;
     return sock.onopen = function() {

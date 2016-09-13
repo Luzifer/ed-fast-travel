@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -13,6 +12,7 @@ import (
 	"github.com/Luzifer/gobuilder/autoupdate"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 const (
@@ -81,14 +81,28 @@ func startWebService() {
 	log.Fatalf("Unable to listen for web connections: %s", http.ListenAndServe(cfg.Listen, r))
 }
 
+func getTranslator(r *http.Request) i18n.TranslateFunc {
+	c, _ := r.Cookie("lang")
+	var cookieLang string
+	if c != nil {
+		cookieLang = c.Value
+	}
+	acceptLang := r.Header.Get("Accept-Language")
+	defaultLang := "en-US" // known valid language
+	T, _ := i18n.Tfunc(cookieLang, acceptLang, defaultLang)
+	return T
+}
+
 func handleFrontend(res http.ResponseWriter, r *http.Request) {
+	T := getTranslator(r)
+
 	frontend, err := Asset("assets/frontend.html")
 	if err != nil {
 		http.Error(res, "Could not load frontend: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tpl, err := template.New("frontend").Parse(string(frontend))
+	tpl, err := template.New("frontend").Funcs(template.FuncMap{"T": T}).Parse(string(frontend))
 	if err != nil {
 		http.Error(res, "Could not parse frontend: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -112,6 +126,7 @@ func handleJS(res http.ResponseWriter, r *http.Request) {
 }
 
 func handleShutdown(res http.ResponseWriter, r *http.Request) {
+	T := getTranslator(r)
 	if cfg.DisableSoftwareControl {
 		http.Error(res, "Controls are disabled", http.StatusForbidden)
 		return
@@ -121,13 +136,14 @@ func handleShutdown(res http.ResponseWriter, r *http.Request) {
 
 	jsonResponse{
 		Success:      true,
-		ErrorMessage: "Service will shut down now. Please close this window.",
+		ErrorMessage: T("warn_service_will_shutdown"),
 	}.Send(res, false)
 
 	<-time.After(time.Second) // Give the response a second to send
 }
 
 func handleUpdate(res http.ResponseWriter, r *http.Request) {
+	T := getTranslator(r)
 	if cfg.DisableSoftwareControl {
 		http.Error(res, "Controls are disabled", http.StatusForbidden)
 		return
@@ -143,7 +159,7 @@ func handleUpdate(res http.ResponseWriter, r *http.Request) {
 		if !hasUpdate {
 			jsonResponse{
 				Success:      false,
-				ErrorMessage: "No new version was found.",
+				ErrorMessage: T("warn_no_new_version_found"),
 			}.Send(res, false)
 			return
 		}
@@ -157,18 +173,19 @@ func handleUpdate(res http.ResponseWriter, r *http.Request) {
 	} else {
 		jsonResponse{
 			Success:      true,
-			ErrorMessage: "Service was updated. Please restart it now.",
+			ErrorMessage: T("warn_service_update_success"),
 		}.Send(res, false)
 	}
 }
 
 func handleSystemByName(res http.ResponseWriter, r *http.Request) {
+	T := getTranslator(r)
 	search := r.URL.Query().Get("system_name")
 
 	if len(search) < 3 {
 		jsonResponse{
 			Success:      false,
-			ErrorMessage: "You've entered too few characters.",
+			ErrorMessage: T("warn_too_few_characers"),
 		}.Send(res, true)
 		return
 	}
@@ -183,13 +200,14 @@ func handleSystemByName(res http.ResponseWriter, r *http.Request) {
 	} else {
 		jsonResponse{
 			Success:      false,
-			ErrorMessage: "Did not find an unique match for your system search.",
+			ErrorMessage: T("warn_no_matching_system_found"),
 		}.Send(res, true)
 		return
 	}
 }
 
 func handleRouteSocket(res http.ResponseWriter, r *http.Request) {
+	T := getTranslator(r)
 	// In case socket quits also quit all child operations
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -230,7 +248,7 @@ func handleRouteSocket(res http.ResponseWriter, r *http.Request) {
 		if msg.RouteRequestID == "" || msg.StartSystemID == 0 || msg.TargetSystemID == 0 {
 			messageChan <- routeResponse{
 				Success:      false,
-				ErrorMessage: "Required field missing",
+				ErrorMessage: T("warn_required_field_missing"),
 			}
 			continue
 		}
@@ -238,7 +256,7 @@ func handleRouteSocket(res http.ResponseWriter, r *http.Request) {
 		if msg.StopDistance < cfg.WebRouteStopMin {
 			messageChan <- routeResponse{
 				Success:      false,
-				ErrorMessage: fmt.Sprintf("Stop distance must not be less than %.2f Ly.", cfg.WebRouteStopMin),
+				ErrorMessage: T("warn_stop_distance_too_small", cfg),
 			}
 			continue
 		}

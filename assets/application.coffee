@@ -115,7 +115,7 @@ spawnSocket = () ->
 
   sock = new WebSocket(endpoint)
   sock.onclose = ->
-    setWarning 'Communication with server ended unexpectedly. Please reload this page to continue your calculation.'
+    setWarning translations["warn_communication_lost"]
   sock.onmessage = handleRouteResult
   sock.onopen = () ->
     if firstConnect

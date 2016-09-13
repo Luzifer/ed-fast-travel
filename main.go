@@ -1,6 +1,6 @@
 package main
 
-//go:generate go-bindata -pkg $GOPACKAGE -o assets.go assets/
+//go:generate go-bindata -pkg $GOPACKAGE -o assets.go assets/ i18n/
 
 import (
 	"compress/gzip"

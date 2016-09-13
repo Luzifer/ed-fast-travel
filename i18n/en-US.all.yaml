@@ -1,0 +1,90 @@
+---
+- id: warn_service_will_shutdown
+  translation: Service will shut down now. Please close this window.
+
+- id: warn_no_new_version_found
+  translation: No new version was found.
+
+- id: warn_service_update_success
+  translation: Service was updated. Please restart it now.
+
+- id: warn_too_few_characers
+  translation: You've entered too few characters.
+
+- id: warn_no_matching_system_found
+  translation: Did not find an unique match for your system search.
+
+- id: warn_required_field_missing
+  translation: Required field missing
+
+- id: warn_stop_distance_too_small
+  translation: 'Stop distance must not be less than {{.WebRouteStopMin | printf "%.0f"}} Ly.'
+
+- id: warn_communication_lost
+  translation: Communication with server ended unexpectedly. Please reload this page to continue your calculation.
+
+- id: frontend_title
+  translation: "ed-fast-travel - Elite: Dangerous long-distance travel planner"
+
+- id: frontend_btn_settings
+  translation: Settings
+
+- id: frontend_btn_clear_route
+  translation: Clear Route
+
+- id: frontend_btn_update
+  translation: Update Software
+
+- id: frontend_btn_shutdown
+  translation: Shutdown
+
+- id: frontend_btn_info
+  translation: Info
+
+- id: frontend_warning_prefix
+  translation: Warning!
+
+- id: frontend_table_system
+  translation: System
+
+- id: frontend_table_distance
+  translation: Distance
+
+- id: frontend_table_total_distance
+  translation: Total Distance
+
+- id: frontend_input_system_name
+  translation: System Name
+
+- id: frontend_btn_add
+  translation: Add
+
+- id: frontend_modal_title_settings
+  translation: Settings
+
+- id: frontend_input_label_stoprange
+  translation: Distance between stops
+
+- id: frontend_input_label_showcoords
+  translation: Show coordinates
+
+- id: frontend_btn_save
+  translation: Save
+
+- id: frontend_modal_title_info
+  translation: Information
+
+- id: frontend_modal_info_listed
+  translation: Listed in
+
+- id: frontend_modal_info_system_data_from
+  translation: System data from
+
+- id: frontend_modal_info_released_under
+  translation: Released under
+
+- id: frontend_modal_info_source_code
+  translation: Source code available on
+
+- id: frontend_modal_info_maintainer
+  translation: Maintainer

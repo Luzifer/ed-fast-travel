@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>ed-fast-travel - Elite: Dangerous long-distance travel planner</title>
+    <title>{{T "frontend_title"}}</title>
 
     <!-- Bootstrap -->
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -51,13 +51,38 @@
 					<ul class="nav navbar-nav">
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						<li><a  data-toggle="modal" data-target="#settings" type="button"><i class="fa fa-gear" aria-hidden="true"></i> Settings</a></li>
-						<li><a href="#" id="trash-route"><i class="fa fa-trash" aria-hidden="true"></i> Clear Route</a></li>
+						<li>
+              <a data-toggle="modal" data-target="#settings" type="button">
+                <i class="fa fa-gear" aria-hidden="true"></i>
+                {{T "frontend_btn_settings"}}
+              </a>
+            </li>
+						<li>
+              <a href="#" id="trash-route">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+                {{T "frontend_btn_clear_route"}}
+              </a>
+            </li>
             {{ if not .disableSoftwareControl }}
-						<li><a  id="update-system"><i class="fa fa-download" aria-hidden="true"></i> Update Software</a></li>
-						<li><a  id="shutdown-system"><i class="fa fa-power-off" aria-hidden="true"></i> Shutdown</a></li>
+						<li>
+              <a id="update-system">
+                <i class="fa fa-download" aria-hidden="true"></i>
+                {{T "frontend_btn_update"}}
+              </a>
+            </li>
+						<li>
+              <a id="shutdown-system">
+                <i class="fa fa-power-off" aria-hidden="true"></i>
+                {{T "frontend_btn_shutdown"}}
+              </a>
+            </li>
             {{ end }}
-						<li><a  data-toggle="modal" data-target="#info" type="button" id="update-system"><i class="fa fa-info" aria-hidden="true"></i> Info</a></li>
+						<li>
+              <a data-toggle="modal" data-target="#info" type="button" id="update-system">
+                <i class="fa fa-info" aria-hidden="true"></i>
+                {{T "frontend_btn_info"}}
+              </a>
+            </li>
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container-fluid -->
@@ -68,7 +93,7 @@
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
           <div class="alert alert-warning" role="alert" id="warning">
-            <strong>Warning!</strong> <span id="warning-text"></span>
+            <strong>{{T "frontend_warning_prefix"}}</strong> <span id="warning-text"></span>
           </div>
         </div>
       </div>
@@ -78,39 +103,12 @@
           <table class="table table-striped">
             <tr>
               <th class="col-md-1 right">#</th>
-              <th class="col-md-8">System</th>
-              <th class="right">Distance</th>
-              <th class="right">Total Distance</th>
+              <th class="col-md-8">{{T "frontend_table_system"}}</th>
+              <th class="right">{{T "frontend_table_distance"}}</th>
+              <th class="right">{{T "frontend_table_total_distance"}}</th>
             </tr>
 
-            <!--
-            <tr>
-              <td class="right">&nbsp;</td>
-              <td>Veil West Sector DL-Y d68</td>
-              <td class="right">&nbsp;</td>
-              <td class="right">&nbsp;</td>
-            </tr>
-
-            <tr>
-              <td class="right">1</td>
-              <td title="Click to copy system name" class="copy-system">
-                <span class="copy-text">Prooe Drye ME-K c11-15</span>
-                <span class="coordinates">(-1807.00000 / -183.87500 / 709.50000)</span>
-              </td>
-              <td class="right">501.61 Ly</td>
-              <td class="right">501.61 Ly</td>
-            </tr>
-
-            <tr>
-              <td class="right">2</td>
-              <td title="Click to copy system name" class="copy-system">
-                <span class="copy-text">Prooe Drye EH-U e3-16</span>
-                <span class="coordinates">(-2216.15625 / -169.78125 / 987.34375)</span>
-              </td>
-              <td class="right">494.78 Ly</td>
-              <td class="right">996.39 Ly</td>
-            </tr>
-            -->
+            <!-- Auto-Generated-Content -->
 
             <tr id="inputSystemRow">
               <td>&nbsp;</td>
@@ -121,9 +119,9 @@
                       <div class="input-group-addon">
                         <i class="fa fa-pencil" id="add-system-icon" aria-hidden="true"></i>
                       </div>
-                      <input type="text" class="form-control" id="inputSystem" placeholder="System Name">
+                      <input type="text" class="form-control" id="inputSystem" placeholder="{{T "frontend_input_system_name"}}">
                       <div class="input-group-btn">
-                        <button id="add-system-btn" class="btn btn-default" disabled>Add</button>
+                        <button id="add-system-btn" class="btn btn-default" disabled>{{T "frontend_btn_add"}}</button>
                       </div>
                     </div>
                   </div>
@@ -143,13 +141,13 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="gridSystemModalLabel">Settings</h4>
+						<h4 class="modal-title" id="gridSystemModalLabel">{{T "frontend_modal_title_settings"}}</h4>
 					</div>
 					<div class="modal-body">
             <div id="settings-form" class="form">
 
               <div class="form-group">
-                <label for="stop-range">Distance between stops</label>
+                <label for="stop-range">{{T "frontend_input_label_stoprange"}}</label>
                 <div class="input-group">
                   <input type="number" class="form-control" id="stop-range" value="500">
                   <div class="input-group-addon">Ly</div>
@@ -158,14 +156,14 @@
 
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" id="show-coords"> Show coordinates
+                  <input type="checkbox" id="show-coords"> {{T "frontend_input_label_showcoords"}}
                 </label>
               </div>
 
             </div>
 					</div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="settings-save">Save</button>
+            <button type="button" class="btn btn-primary" id="settings-save">{{T "frontend_btn_save"}}</button>
           </div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->
@@ -176,18 +174,33 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="gridSystemModalLabel">Information</h4>
+						<h4 class="modal-title" id="gridSystemModalLabel">{{T "frontend_modal_title_info"}}</h4>
 					</div>
 					<div class="modal-body">
             <p>
 						  <strong>ed-fast-travel {{ .version }}</strong>
             </p>
             <ul>
-              <li>Listed in <a href="http://edcodex.info/?m=tools&entry=399">EDCodex</a>
-              <li>System data from <a href="https://www.edsm.net/">EDSM</a>
-              <li>Released under <a href="https://github.com/Luzifer/ed-fast-travel/blob/master/LICENSE">Apache 2.0 License</a>
-              <li>Source code available on <a href="https://github.com/Luzifer/ed-fast-travel">GitHub</a>
-              <li>Maintainer: <a href="https://luzifer.io/">Knut Ahlers</a> (CMDR Luziferus)
+              <li>
+                {{T "frontend_modal_info_listed"}}
+                <a href="http://edcodex.info/?m=tools&entry=399">EDCodex</a>
+              </li>
+              <li>
+                {{T "frontend_modal_info_system_data_from"}}
+                <a href="https://www.edsm.net/">EDSM</a>
+              </li>
+              <li>
+                {{T "frontend_modal_info_released_under"}}
+                <a href="https://github.com/Luzifer/ed-fast-travel/blob/master/LICENSE">Apache 2.0 License</a>
+              </li>
+              <li>
+                {{T "frontend_modal_info_source_code"}}
+                <a href="https://github.com/Luzifer/ed-fast-travel">GitHub</a>
+              <li>
+              <li>
+                {{T "frontend_modal_info_maintainer"}}:
+                <a href="https://luzifer.io/">Knut Ahlers</a> (CMDR Luziferus)
+              </li>
             </ul>
 					</div>
 				</div><!-- /.modal-content -->
@@ -200,6 +213,12 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.12/clipboard.min.js"></script>
+
+    <script type="javascript">
+      translations = {
+        'warn_communication_lost': '{{T "warn_communication_lost"}}',
+      }
+    </script>
     <script src="/assets/application.js"></script>
   </body>
 </html>
