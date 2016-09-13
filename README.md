@@ -19,9 +19,21 @@
 
 ## Usage
 
-### Route-Planning
+You can download pre-compiled binaries on [GoBuilder](https://gobuilder.me/github.com/Luzifer/ed-fast-travel) for your system.
 
-You can download pre-compiled binaries on [GoBuilder](https://gobuilder.me/github.com/Luzifer/ed-fast-travel) for your system. Afterwards you need to execute it using the console / cmd prompt:
+### Web-Interface
+
+Starting with version `v0.7.0` `ed-fast-travel` does contain a GUI to be used through your browser. To use that one just start the command without any arguments (you may want to see the parameters for more adjustments but the defaults will work for most people) and it will listen on port 3000 on your local machine. To access the GUI just access `http://localhost:3000/` and you can start using it:
+
+![GUI Demo](https://d3vv6lp55qjaqc.cloudfront.net/items/0L1N3R3r2W1w051U1k2B/Screen%20Recording%202016-09-13%20at%2001.51%20PM.gif)
+
+On the first start the initialization will require a few moments as the database needs to be downloaded and loaded into the application.
+
+For all parameters available please execute the utility with `--help` parameter.
+
+### CLI / Text Route-Planning
+
+To get a route in plain text format you need to execute the tool using the console / cmd prompt:
 
 [![asciicast](https://asciinema.org/a/7ea5fd8hexx9wy38bcge3er1j.png)](https://asciinema.org/a/7ea5fd8hexx9wy38bcge3er1j?t=12)
 
