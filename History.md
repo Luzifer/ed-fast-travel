@@ -1,3 +1,7 @@
+# 0.10.0 / 2016-09-13
+
+  * Add database update to frontend
+
 # 0.9.0 / 2016-09-13
 
   * Add german translation
