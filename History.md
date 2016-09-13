@@ -1,3 +1,7 @@
+# 0.8.2 / 2016-09-13
+
+  * Fix: File format was missing argument
+
 # 0.8.1 / 2016-09-13
 
   * Fix: Respect distance when caching
