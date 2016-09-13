@@ -214,13 +214,14 @@
   };
 
   handleHashChange = function() {
-    var msg, pbar, request_id, results, start, target, tmp;
+    var ct, msg, pbar, request_id, results, start, target, tmp;
     $('.auto-added').remove();
     route = location.hash.substring(1).split(',');
     tmp = route;
+    ct = 0;
     results = [];
     while (tmp.length > 1) {
-      request_id = tmp[0] + "::" + tmp[1];
+      request_id = tmp[0] + "::" + tmp[1] + "::" + ct;
       start = getSystemLine();
       $(start).data('request_id', request_id);
       $(start).data('system_id', tmp[0]);
@@ -239,7 +240,8 @@
         stop_distance: parseFloat($('#stop-range').val())
       };
       sock.send(JSON.stringify(msg));
-      results.push(tmp = tmp.slice(1));
+      tmp = tmp.slice(1);
+      results.push(ct = ct + 1);
     }
     return results;
   };

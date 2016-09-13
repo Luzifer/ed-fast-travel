@@ -168,8 +168,9 @@ handleHashChange = () ->
   route = location.hash.substring(1).split(',')
 
   tmp = route
+  ct = 0
   while tmp.length > 1
-    request_id = "#{tmp[0]}::#{tmp[1]}"
+    request_id = "#{tmp[0]}::#{tmp[1]}::#{ct}"
 
     start = getSystemLine()
     $(start).data 'request_id', request_id
@@ -192,6 +193,7 @@ handleHashChange = () ->
       stop_distance: parseFloat($('#stop-range').val())
     sock.send(JSON.stringify(msg))
     tmp = tmp[1..]
+    ct = ct + 1
 
 getProgressBar = () ->
   $('<tr class="auto-added pbar">
