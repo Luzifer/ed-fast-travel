@@ -169,10 +169,11 @@ compileCoordinates = (coords) ->
   "(#{coords.x.toFixed(5)} / #{coords.y.toFixed(5)} / #{coords.z.toFixed(5)})"
 
 handleHashChange = () ->
+  $('.auto-added').remove()
+
   if location.hash.substring(1) == ""
     return
 
-  $('.auto-added').remove()
   route = location.hash.substring(1).split(',')
 
   tmp = route
