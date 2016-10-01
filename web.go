@@ -79,6 +79,7 @@ func startWebService() {
 	r.HandleFunc("/api/control/update", handleUpdate)
 	r.HandleFunc("/api/control/update-database", handleUpdateDatabase)
 
+	verboseLog("Webserver started and listening on %s", cfg.Listen)
 	log.Fatalf("Unable to listen for web connections: %s", http.ListenAndServe(cfg.Listen, r))
 }
 

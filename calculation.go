@@ -168,12 +168,16 @@ func loadStarSystems() (*starSystemDatabase, error) {
 
 	starSystems.GenerateCoordinateBuckets(starSystems.Min, starSystems.Max)
 
-	bar := pb.StartNew(len(starSystems.Systems))
+	bar := pb.New(len(starSystems.Systems))
+	if !cfg.Silent {
+		bar.Start()
+	}
 	for id, sys := range starSystems.Systems {
 		starSystems.coordinateBucket.Add(sys.Coords, id)
 		bar.Increment()
 	}
-	bar.FinishPrint("Database loaded.")
+	bar.Finish()
+	verboseLog("Database loaded successfully.")
 
 	return starSystems, nil
 }
