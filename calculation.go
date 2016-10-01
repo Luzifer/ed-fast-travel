@@ -24,9 +24,85 @@ type traceResult struct {
 	TotalFlightDistance float64     `json:"total_flight_distance"`
 }
 
+type coordinateBucket struct {
+	Bounds  [2]starCoordinate
+	Buckets []*coordinateBucket
+	Systems []int64
+}
+
+func (c *coordinateBucket) CreateSubBuckets(depth int) {
+	if depth == 0 {
+		return
+	}
+
+	minC := c.Bounds[0]
+	maxC := c.Bounds[1]
+
+	midX := c.Bounds[0].X + (c.Bounds[1].X-c.Bounds[0].X)/2
+	midY := c.Bounds[0].Y + (c.Bounds[1].Y-c.Bounds[0].Y)/2
+	midZ := c.Bounds[0].Z + (c.Bounds[1].Z-c.Bounds[0].Z)/2
+
+	c.Buckets = []*coordinateBucket{
+		{Bounds: [2]starCoordinate{{minC.X, minC.Y, minC.Z}, {midX, midY, midZ}}},
+		{Bounds: [2]starCoordinate{{midX, minC.Y, minC.Z}, {maxC.X, midY, midZ}}},
+		{Bounds: [2]starCoordinate{{minC.X, midY, minC.Z}, {midX, maxC.Y, midZ}}},
+		{Bounds: [2]starCoordinate{{midX, midY, minC.Z}, {maxC.X, maxC.Y, midZ}}},
+
+		{Bounds: [2]starCoordinate{{minC.X, minC.Y, midZ}, {midX, midY, maxC.Z}}},
+		{Bounds: [2]starCoordinate{{midX, minC.Y, midZ}, {maxC.X, midY, maxC.Z}}},
+		{Bounds: [2]starCoordinate{{minC.X, midY, midZ}, {midX, maxC.Y, maxC.Z}}},
+		{Bounds: [2]starCoordinate{{midX, midY, midZ}, {maxC.X, maxC.Y, maxC.Z}}},
+	}
+
+	for i := range c.Buckets {
+		c.Buckets[i].CreateSubBuckets(depth - 1)
+	}
+}
+
+func (c coordinateBucket) ContainsCoordinate(in starCoordinate) bool {
+	return c.Bounds[0].X <= in.X &&
+		c.Bounds[0].Y <= in.Y &&
+		c.Bounds[0].Z <= in.Z &&
+		c.Bounds[1].X >= in.X &&
+		c.Bounds[1].Y >= in.Y &&
+		c.Bounds[1].Z >= in.Z
+}
+
+func (c *coordinateBucket) Add(in starCoordinate, id int64) bool {
+	if !c.ContainsCoordinate(in) {
+		return false
+	}
+
+	if len(c.Buckets) > 0 {
+		for _, b := range c.Buckets {
+			if ok := b.Add(in, id); ok {
+				return true
+			}
+		}
+	}
+
+	c.Systems = append(c.Systems, id)
+	return true
+}
+
+func (c coordinateBucket) GetByCoordinate(in starCoordinate) *coordinateBucket {
+	if !c.ContainsCoordinate(in) {
+		return nil
+	}
+
+	for _, b := range c.Buckets {
+		if ret := b.GetByCoordinate(in); ret != nil {
+			return ret
+		}
+	}
+
+	return &c
+}
+
 type starSystemDatabase struct {
-	Systems map[int64]*starSystem
-	NameDB  map[string]int64
+	Systems          map[int64]*starSystem
+	NameDB           map[string]int64
+	CoordinateBucket *coordinateBucket
 }
 
 func loadStarSystems() (*starSystemDatabase, error) {
@@ -47,9 +123,26 @@ func newStarSystemDatabase() *starSystemDatabase {
 	}
 }
 
+func (systems *starSystemDatabase) GenerateCoordinateBuckets(min, max starCoordinate) error {
+
+	startBucket := &coordinateBucket{
+		Bounds:  [2]starCoordinate{min, max},
+		Buckets: []*coordinateBucket{},
+		Systems: []int64{},
+	}
+
+	startBucket.CreateSubBuckets(4)
+	systems.CoordinateBucket = startBucket
+
+	return nil
+}
+
 func (systems *starSystemDatabase) AddSystem(s *starSystem) error {
 	systems.Systems[s.ID] = s
 	systems.NameDB[strings.ToLower(s.Name)] = s.ID
+	if !systems.CoordinateBucket.Add(s.Coords, s.ID) {
+		return errors.New("Could not put coordinate into bucket: No bucket found.")
+	}
 	return nil
 }
 
@@ -145,7 +238,12 @@ func (systems starSystemDatabase) GetSystemByNearestCoordinate(coords starCoordi
 	dist := math.MaxFloat64
 	var storedSystem *starSystem
 
-	for i := range systems.Systems {
+	bucket := systems.CoordinateBucket.GetByCoordinate(coords)
+	if bucket == nil {
+		return nil
+	}
+
+	for _, i := range bucket.Systems {
 		if d := systems.Systems[i].Coords.DistanceLy(coords); d < dist && systems.Systems[i].ID != skipSystem.ID {
 			dist = d
 			storedSystem = systems.Systems[i]
