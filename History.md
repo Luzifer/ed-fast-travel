@@ -1,3 +1,10 @@
+# 0.11.0 / 2016-10-02
+
+  * Improve CLI logging
+  * Implement backtracking to calculate routes with low jump ranges
+  * Introduce bucket database for huge speed increase
+  * Restructure systems database for faster access
+
 # 0.10.0 / 2016-09-13
 
   * Add database update to frontend
