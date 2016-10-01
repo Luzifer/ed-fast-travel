@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+const numberOfBucketLayers = 6
+
 func init() {
 	gob.Register(starSystemDatabase{})
 }
@@ -131,7 +133,7 @@ func (systems *starSystemDatabase) GenerateCoordinateBuckets(min, max starCoordi
 		Systems: []int64{},
 	}
 
-	startBucket.CreateSubBuckets(4)
+	startBucket.CreateSubBuckets(numberOfBucketLayers - 1)
 	systems.CoordinateBucket = startBucket
 
 	return nil
