@@ -229,7 +229,7 @@
   };
 
   handleHashChange = function() {
-    var ct, msg, pbar, request_id, results, start, target, tmp;
+    var ct, msg, pbar, request_id, results, tmp;
     $('.auto-added').remove();
     route = location.hash.substring(1).split(',');
     if (location.hash.substring(1) === "") {
@@ -240,17 +240,9 @@
     results = [];
     while (tmp.length > 1) {
       request_id = tmp[0] + "::" + tmp[1] + "::" + ct;
-      start = getSystemLine();
-      $(start).data('request_id', request_id);
-      $(start).data('system_id', tmp[0]);
-      $(start).insertBefore($('#inputSystemRow'));
       pbar = getProgressBar();
       $(pbar).data('request_id', request_id);
       $(pbar).insertBefore($('#inputSystemRow'));
-      target = getSystemLine();
-      $(target).data('request_id', request_id);
-      $(target).data('system_id', tmp[1]);
-      $(target).insertBefore($('#inputSystemRow'));
       msg = {
         start_system_id: parseInt(tmp[0]),
         target_system_id: parseInt(tmp[1]),
