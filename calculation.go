@@ -277,6 +277,11 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 		stop := sphericMatchSystems.GetNearestSystem(idealTargetCoordinate)
 
 		if stop == nil {
+			if len(flightPlan) <= 1 {
+				eChan <- errors.New("Was not able to calculate first stop, canceling calculation now.")
+				return
+			}
+
 			flightPlan = flightPlan[0 : len(flightPlan)-1]
 			oldStop = flightPlan[len(flightPlan)-1]
 			continue

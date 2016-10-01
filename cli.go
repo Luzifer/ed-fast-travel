@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/Luzifer/rconfig"
 	"github.com/cheggaaa/pb"
@@ -59,7 +60,9 @@ func doCLICalculation() {
 
 	bar := pb.New(10000)
 	bar.ShowCounters = false
-	bar.Start()
+	if !cfg.Silent {
+		bar.Start()
+	}
 
 	for stop := range rChan {
 		if stop.TraceType == traceTypeProgress {
@@ -82,6 +85,8 @@ func doCLICalculation() {
 			break
 		}
 	}
+
+	<-time.After(500 * time.Millisecond)
 
 	verboseLog("Calculation shows an overhead of %.2f Ly in comparison to linear distance.", totalFlight-linearDistance)
 }
