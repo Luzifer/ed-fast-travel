@@ -54,7 +54,7 @@ func generateGOBDatabase() error {
 
 	log.Printf("Transforming input data...")
 	tmp := newStarSystemDatabase()
-	tmp.GenerateCoordinateBuckets(starCoordinate{minX, minY, minY}, starCoordinate{maxX, maxY, maxZ})
+	tmp.Min, tmp.Max = starCoordinate{minX, minY, minY}, starCoordinate{maxX, maxY, maxZ}
 
 	bar := pb.StartNew(len(originData))
 	for _, system := range originData {
