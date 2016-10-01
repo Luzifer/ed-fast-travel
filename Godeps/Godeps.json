@@ -19,6 +19,11 @@
 			"Rev": "31d785fa79c95e7b92c955689c5b0feed4fc0c7d"
 		},
 		{
+			"ImportPath": "github.com/cheggaaa/pb",
+			"Comment": "v1.0.5-4-gad4efe0",
+			"Rev": "ad4efe000aa550bb54918c06ebbadc0ff17687b9"
+		},
+		{
 			"ImportPath": "github.com/fatih/color",
 			"Comment": "v0.1-8-g76d4231",
 			"Rev": "76d423163af754ff6423d2d9be0057fbf03c57c2"
