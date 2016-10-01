@@ -24,17 +24,33 @@ type traceResult struct {
 	TotalFlightDistance float64     `json:"total_flight_distance"`
 }
 
-type starSystemDatabase []starSystem
+type starSystemDatabase struct {
+	Systems map[int64]*starSystem
+	NameDB  map[string]int64
+}
 
-func loadStarSystems() (starSystemDatabase, error) {
-	starSystems := starSystemDatabase{}
-	dump, err := os.Open(path.Join(cfg.EDSMDumpPath, "dump.bin"))
+func loadStarSystems() (*starSystemDatabase, error) {
+	starSystems := newStarSystemDatabase()
+	dump, err := os.Open(path.Join(cfg.EDSMDumpPath, readableDumpName))
 	if err != nil {
-		return nil, err
+		return starSystems, err
 	}
 	defer dump.Close()
 
 	return starSystems, gob.NewDecoder(dump).Decode(&starSystems)
+}
+
+func newStarSystemDatabase() *starSystemDatabase {
+	return &starSystemDatabase{
+		Systems: make(map[int64]*starSystem),
+		NameDB:  make(map[string]int64),
+	}
+}
+
+func (systems *starSystemDatabase) AddSystem(s *starSystem) error {
+	systems.Systems[s.ID] = s
+	systems.NameDB[strings.ToLower(s.Name)] = s.ID
+	return nil
 }
 
 func (systems starSystemDatabase) CalculateRoute(ctx context.Context, a, b *starSystem, stopDistance float64) (<-chan traceResult, <-chan error) {
@@ -129,10 +145,10 @@ func (systems starSystemDatabase) GetSystemByNearestCoordinate(coords starCoordi
 	dist := math.MaxFloat64
 	var storedSystem *starSystem
 
-	for i := range systems {
-		if d := systems[i].Coords.DistanceLy(coords); d < dist && systems[i].ID != skipSystem.ID {
+	for i := range systems.Systems {
+		if d := systems.Systems[i].Coords.DistanceLy(coords); d < dist && systems.Systems[i].ID != skipSystem.ID {
 			dist = d
-			storedSystem = &systems[i]
+			storedSystem = systems.Systems[i]
 		}
 	}
 
@@ -140,21 +156,13 @@ func (systems starSystemDatabase) GetSystemByNearestCoordinate(coords starCoordi
 }
 
 func (systems starSystemDatabase) GetSystemByName(name string) *starSystem {
-	for i := range systems {
-		if strings.ToLower(systems[i].Name) == strings.ToLower(name) {
-			return &systems[i]
-		}
+	if systemID, ok := systems.NameDB[strings.ToLower(name)]; ok {
+		return systems.Systems[systemID]
 	}
 
 	return nil
 }
 
 func (systems starSystemDatabase) GetSystemByID(id int64) *starSystem {
-	for i := range systems {
-		if systems[i].ID == id {
-			return &systems[i]
-		}
-	}
-
-	return nil
+	return systems.Systems[id]
 }

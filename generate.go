@@ -18,10 +18,17 @@ func generateGOBDatabase() error {
 	}
 	defer edsmDump.Body.Close()
 
-	log.Printf("Readin dump...")
-	tmp := starSystemDatabase{}
-	if err := json.NewDecoder(edsmDump.Body).Decode(&tmp); err != nil {
+	log.Printf("Reading dump...")
+	originData := []*starSystem{}
+	if err := json.NewDecoder(edsmDump.Body).Decode(&originData); err != nil {
 		return err
+	}
+
+	log.Printf("Transforming input data...")
+	tmp := newStarSystemDatabase()
+
+	for _, system := range originData {
+		tmp.AddSystem(system)
 	}
 
 	log.Printf("Creating files...")
@@ -29,13 +36,13 @@ func generateGOBDatabase() error {
 		return err
 	}
 
-	fp, err := os.Create(path.Join(cfg.EDSMDumpPath, "dump.bin"))
+	fp, err := os.Create(path.Join(cfg.EDSMDumpPath, readableDumpName))
 	if err != nil {
 		return err
 	}
 	defer fp.Close()
 
-	fpzip, err := os.Create(path.Join(cfg.EDSMDumpPath, "systemsWithCoordinates.bin.gz"))
+	fpzip, err := os.Create(path.Join(cfg.EDSMDumpPath, compressedDumpName))
 	if err != nil {
 		return err
 	}

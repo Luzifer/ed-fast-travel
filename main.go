@@ -20,10 +20,12 @@ import (
 )
 
 const (
-	autoUpdateRepo  = "github.com/Luzifer/ed-fast-travel"
-	autoUpdateLabel = "master"
-	edsmDumpURL     = "http://assets.luzifer.io/systemsWithCoordinates.bin.gz"
-	originalDumpURL = "https://www.edsm.net/dump/systemsWithCoordinates.json"
+	autoUpdateRepo     = "github.com/Luzifer/ed-fast-travel"
+	autoUpdateLabel    = "master"
+	readableDumpName   = "dump_v2.bin"
+	compressedDumpName = "dump_v2.bin.gz"
+	edsmDumpURL        = "http://assets.luzifer.io/" + compressedDumpName
+	originalDumpURL    = "https://www.edsm.net/dump/systemsWithCoordinates.json"
 )
 
 var (
@@ -45,7 +47,7 @@ var (
 
 	version = "dev"
 
-	starSystems     starSystemDatabase
+	starSystems     *starSystemDatabase
 	starSystemsLock sync.RWMutex
 	cache           routeCache
 )
@@ -101,7 +103,7 @@ func main() {
 		}
 	}
 
-	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, "dump.bin")); err != nil || cfg.UpdateData {
+	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, readableDumpName)); err != nil || cfg.UpdateData {
 		if err := refreshEDSMData(); err != nil {
 			log.Fatalf("Unable to refresh EDSM data: %s", err)
 		}
@@ -150,7 +152,7 @@ func refreshEDSMData() error {
 		}
 	}
 
-	dump, err := os.Create(path.Join(cfg.EDSMDumpPath, "dump.bin"))
+	dump, err := os.Create(path.Join(cfg.EDSMDumpPath, readableDumpName))
 	if err != nil {
 		return err
 	}
