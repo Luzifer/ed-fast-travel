@@ -14,13 +14,18 @@ import (
 	"github.com/cheggaaa/pb"
 )
 
-const numberOfBucketLayers = 6
+const (
+	traceTypeFlightStop  = "flight_stop"
+	traceTypeProgress    = "trace_progress"
+	numberOfBucketLayers = 6
+)
 
 func init() {
 	gob.Register(starSystemDatabase{})
 }
 
 type traceResult struct {
+	TraceType           string      `json:"trace_type"`
 	FlightDistance      float64     `json:"flight_distance"`
 	Progress            float64     `json:"progress"`
 	Requested           bool        `json:"requested"`
@@ -109,6 +114,34 @@ func (c coordinateBucket) GetSystems() []int64 {
 
 	for _, b := range c.Buckets {
 		out = append(out, b.GetSystems()...)
+	}
+
+	return out
+}
+
+func (c coordinateBucket) InSphere(center starCoordinate, radius float64) bool {
+	min, max := c.Bounds[0], c.Bounds[1]
+
+	return c.ContainsCoordinate(center) ||
+		center.DistanceLy(min) <= radius ||
+		center.DistanceLy(starCoordinate{min.X, min.Y, max.Z}) <= radius ||
+		center.DistanceLy(starCoordinate{min.X, max.Y, max.Z}) <= radius ||
+		center.DistanceLy(starCoordinate{max.X, min.Y, max.Z}) <= radius ||
+		center.DistanceLy(starCoordinate{max.X, max.Y, min.Z}) <= radius ||
+		center.DistanceLy(starCoordinate{max.X, min.Y, min.Z}) <= radius ||
+		center.DistanceLy(starCoordinate{min.X, max.Y, min.Z}) <= radius ||
+		center.DistanceLy(max) <= radius
+}
+
+func (c coordinateBucket) GetFilledBucketsBySphere(center starCoordinate, radius float64) []*coordinateBucket {
+	out := []*coordinateBucket{}
+
+	if c.InSphere(center, radius) && len(c.Systems) > 0 {
+		out = append(out, &c)
+	}
+
+	for _, b := range c.Buckets {
+		out = append(out, b.GetFilledBucketsBySphere(center, radius)...)
 	}
 
 	return out
@@ -221,36 +254,67 @@ func (systems starSystemDatabase) startRouteTracer(ctx context.Context, rChan ch
 		return
 	}
 
-	cachedRoute := []traceResult{}
+	forbiddenSystemIDs := []int64{}
+	flightPlan := []*starSystem{}
+
 	oldStop := a
+	for oldStop.Coords.DistanceLy(b.Coords) > 0 && keepRunning {
+		forbiddenSystemIDs = append(forbiddenSystemIDs, oldStop.ID)
+		idealTargetCoordinate := oldStop.Coords.PartVectorTarget(b.Coords, stopDistance)
+
+		sphericMatchSystems := bucketListToSystemList(systems.coordinateBucket.GetFilledBucketsBySphere(idealTargetCoordinate, stopDistance*.1))
+		sphericMatchSystems = sphericMatchSystems.
+			Filter(func(s *starSystem) bool { return s.Coords.DistanceLy(oldStop.Coords) <= stopDistance }).
+			Filter(func(s *starSystem) bool {
+				for _, id := range forbiddenSystemIDs {
+					if s.ID == id {
+						return false
+					}
+				}
+				return true
+			})
+
+		stop := sphericMatchSystems.GetNearestSystem(idealTargetCoordinate)
+
+		if stop == nil {
+			flightPlan = flightPlan[0 : len(flightPlan)-1]
+			oldStop = flightPlan[len(flightPlan)-1]
+			continue
+		}
+
+		flightPlan = append(flightPlan, stop)
+		oldStop = stop
+
+		rChan <- traceResult{
+			TraceType: traceTypeProgress,
+			Progress:  (a.Coords.DistanceLy(b.Coords) - stop.Coords.DistanceLy(b.Coords)) / a.Coords.DistanceLy(b.Coords),
+		}
+	}
+
+	cachedRoute := []traceResult{}
 
 	t := traceResult{
+		TraceType:  traceTypeFlightStop,
 		StarSystem: a,
-		Requested:  true,
 	}
 	rChan <- t
 	cachedRoute = append(cachedRoute, t)
 
 	totalFlight := 0.0
-	for oldStop.Coords.DistanceLy(b.Coords) > 0 && keepRunning {
-		stop := systems.GetSystemByNearestCoordinate(oldStop.Coords.PartVectorTarget(b.Coords, stopDistance), *oldStop)
-		dist := oldStop.Coords.DistanceLy(stop.Coords)
-		totalFlight += dist
-
-		isRequested := stop.ID == b.ID
-
+	oldStop = a
+	for _, s := range flightPlan {
+		totalFlight += oldStop.Coords.DistanceLy(s.Coords)
 		t = traceResult{
-			FlightDistance:      dist,
-			Progress:            (a.Coords.DistanceLy(b.Coords) - stop.Coords.DistanceLy(b.Coords)) / a.Coords.DistanceLy(b.Coords),
-			Requested:           isRequested,
-			StarSystem:          stop,
+			TraceType:           traceTypeFlightStop,
+			FlightDistance:      oldStop.Coords.DistanceLy(s.Coords),
+			Progress:            (a.Coords.DistanceLy(b.Coords) - s.Coords.DistanceLy(b.Coords)) / a.Coords.DistanceLy(b.Coords),
+			StarSystem:          s,
 			TotalFlightDistance: totalFlight,
 		}
 
 		rChan <- t
 		cachedRoute = append(cachedRoute, t)
-
-		oldStop = stop
+		oldStop = s
 	}
 
 	if err := cache.StoreRoute(*a, *b, int64(stopDistance), cachedRoute); err != nil {
@@ -299,4 +363,45 @@ func (systems starSystemDatabase) GetSystemByName(name string) *starSystem {
 
 func (systems starSystemDatabase) GetSystemByID(id int64) *starSystem {
 	return systems.Systems[id]
+}
+
+type systemList []*starSystem
+
+func (s systemList) Filter(f func(system *starSystem) bool) systemList {
+	out := systemList{}
+
+	for _, sys := range s {
+		if f(sys) {
+			out = append(out, sys)
+		}
+	}
+
+	return out
+}
+
+func (s systemList) GetNearestSystem(coords starCoordinate) *starSystem {
+	lowestDist := math.MaxFloat64
+	var result *starSystem
+
+	for i := range s {
+		sys := s[i]
+		if dist := sys.Coords.DistanceLy(coords); dist < lowestDist {
+			result = sys
+			lowestDist = dist
+		}
+	}
+
+	return result
+}
+
+func bucketListToSystemList(c []*coordinateBucket) systemList {
+	out := systemList{}
+
+	for _, cb := range c {
+		for _, id := range cb.GetSystems() {
+			out = append(out, starSystems.GetSystemByID(id))
+		}
+	}
+
+	return out
 }

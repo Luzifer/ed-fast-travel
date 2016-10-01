@@ -315,7 +315,9 @@ func processSocketRouting(parentCtx context.Context, msgChan chan routeResponse,
 					RouteRequestID: r.RouteRequestID,
 					Result:         stop,
 				}
-				counter++
+				if stop.TraceType == traceTypeFlightStop {
+					counter++
+				}
 			} else {
 				return
 			}

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/Luzifer/rconfig"
+	"github.com/cheggaaa/pb"
 	"github.com/fatih/color"
 )
 
@@ -49,12 +50,25 @@ func doCLICalculation() {
 		for {
 			select {
 			case err := <-eChan:
-				log.Fatalf("An error ocurred while plotting the route: %s", err)
+				if err != nil {
+					log.Fatalf("An error ocurred while plotting the route: %s", err)
+				}
 			}
 		}
 	}(eChan)
 
+	bar := pb.New(10000)
+	bar.ShowCounters = false
+	bar.Start()
+
 	for stop := range rChan {
+		if stop.TraceType == traceTypeProgress {
+			bar.Set64(int64(stop.Progress * 10000))
+			continue
+		} else {
+			bar.Finish()
+		}
+
 		fmt.Printf("%4d: '%s' %s with %s distance (total: %s)\n",
 			stopNo,
 			color.GreenString(stop.StarSystem.Name), stop.StarSystem.Coords,

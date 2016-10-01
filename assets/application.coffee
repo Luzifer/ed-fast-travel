@@ -137,6 +137,12 @@ handleRouteResult = (evt) ->
       continue
     pbar = el
 
+  if data.result.progress < 1
+    $(pbar).find('.progress-bar').css('width', "#{data.result.progress * 100}%")
+
+  if data.result.trace_type != "flight_stop"
+    return
+
   editRow = null
 
   for el in $('tr.auto-added')
@@ -164,9 +170,7 @@ handleRouteResult = (evt) ->
     delay 1500, () ->
       toggleButtonClass e.trigger, 'btn-success', 'btn-default'
 
-  if data.result.progress < 1
-    $(pbar).find('.progress-bar').css('width', "#{data.result.progress * 100}%")
-  else
+  if data.result.progress == 1
     $(pbar).remove()
 
 compileCoordinates = (coords) ->

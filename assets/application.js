@@ -181,6 +181,12 @@
       }
       pbar = el;
     }
+    if (data.result.progress < 1) {
+      $(pbar).find('.progress-bar').css('width', (data.result.progress * 100) + "%");
+    }
+    if (data.result.trace_type !== "flight_stop") {
+      return;
+    }
     editRow = null;
     ref1 = $('tr.auto-added');
     for (j = 0, len1 = ref1.length; j < len1; j++) {
@@ -213,9 +219,7 @@
         return toggleButtonClass(e.trigger, 'btn-success', 'btn-default');
       });
     });
-    if (data.result.progress < 1) {
-      return $(pbar).find('.progress-bar').css('width', (data.result.progress * 100) + "%");
-    } else {
+    if (data.result.progress === 1) {
       return $(pbar).remove();
     }
   };
