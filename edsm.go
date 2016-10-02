@@ -17,10 +17,11 @@ import (
 // }
 
 type starSystem struct {
-	Name   string         `json:"name"`
-	Coords starCoordinate `json:"coords"`
-	ID     int64          `json:"id,string"`
-	Date   string         `json:"date"` // TODO: Use date parser
+	Name      string         `json:"name"`
+	Coords    starCoordinate `json:"coords"`
+	ID        int64          `json:"id,string"`
+	Date      string         `json:"date"` // TODO: Use date parser
+	Scoopable bool           `json:"scoopable"`
 }
 
 type starCoordinate struct {
