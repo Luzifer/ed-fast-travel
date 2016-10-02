@@ -166,6 +166,8 @@ handleRouteResult = (evt) ->
   $(editRow).find('.clip').attr 'data-clipboard-text', data.result.star_system.name
   if !data.result.star_system.scoopable
     $(editRow).find('.info-scoop').remove()
+  if !data.result.star_system.permit
+    $(editRow).find('.info-permit').remove()
   clip = new Clipboard $(editRow).find('.clip')[0]
   clip.on 'success', (e) ->
     toggleButtonClass e.trigger, 'btn-default', 'btn-success'
@@ -221,6 +223,7 @@ getSystemLine = () ->
        <td>
         <button class="btn btn-default btn-xs clip"><i class="fa fa-clipboard" aria-hidden="true"></i></button>
          <i class="fa fa-bolt squareinfo info-scoop" title="Scoopable star"></i>
+         <i class="fa fa-ticket squareinfo info-permit" title="Requires permit"></i>
          <span class="system_name"></span>
          <span class="coordinates"></span>
        </td>

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
+	"strings"
 )
 
 // {
@@ -21,12 +23,45 @@ type starSystem struct {
 	Coords    starCoordinate `json:"coords"`
 	ID        int64          `json:"id,string"`
 	Scoopable bool           `json:"scoopable"`
+	Permit    bool           `json:"permit"`
 }
 
 type starCoordinate struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 	Z float64 `json:"z"`
+}
+
+type body struct {
+	Name          string `json:"name"`
+	SpectralClass string `json:"spectral_class"`
+	SystemID      int64  `json:"system_id"`
+	IsMainStar    bool   `json:"is_main_star"`
+}
+
+func (b body) IsScoopable() bool {
+	return strings.Contains("O B A F G K M", b.SpectralClass)
+}
+
+func starSystemFromEDDBData(line []byte) (*starSystem, error) {
+	tmp := struct {
+		Name        string  `json:"name"`
+		X           float64 `json:"x"`
+		Y           float64 `json:"y"`
+		Z           float64 `json:"z"`
+		ID          int64   `json:"id"`
+		NeedsPermit bool    `json:"needs_permit"`
+	}{}
+	if err := json.Unmarshal(line, &tmp); err != nil {
+		return nil, err
+	}
+
+	return &starSystem{
+		Name:   tmp.Name,
+		Coords: starCoordinate{tmp.X, tmp.Y, tmp.Z},
+		ID:     tmp.ID,
+		Permit: tmp.NeedsPermit,
+	}, nil
 }
 
 func (s starCoordinate) DistanceLy(in starCoordinate) float64 {

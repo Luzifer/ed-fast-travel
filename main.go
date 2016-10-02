@@ -20,12 +20,13 @@ import (
 )
 
 const (
-	autoUpdateRepo     = "github.com/Luzifer/ed-fast-travel"
-	autoUpdateLabel    = "master"
-	readableDumpName   = "dump_v2.bin"
-	compressedDumpName = "dump_v2.bin.gz"
-	edsmDumpURL        = "http://assets.luzifer.io/" + compressedDumpName
-	originalDumpURL    = "https://www.edsm.net/dump/systemsWithCoordinates.json"
+	autoUpdateRepo        = "github.com/Luzifer/ed-fast-travel"
+	autoUpdateLabel       = "master"
+	readableDumpName      = "dump_v3.bin"
+	compressedDumpName    = "dump_v3.bin.gz"
+	edsmDumpURL           = "http://assets.luzifer.io/" + compressedDumpName
+	originalSystemDumpURL = "https://eddb.io/archive/v4/systems.jsonl"
+	originalBodyDumpURL   = "https://eddb.io/archive/v4/bodies.jsonl"
 )
 
 var (

@@ -215,6 +215,9 @@
     if (!data.result.star_system.scoopable) {
       $(editRow).find('.info-scoop').remove();
     }
+    if (!data.result.star_system.permit) {
+      $(editRow).find('.info-permit').remove();
+    }
     clip = new Clipboard($(editRow).find('.clip')[0]);
     clip.on('success', function(e) {
       toggleButtonClass(e.trigger, 'btn-default', 'btn-success');
@@ -264,7 +267,7 @@
   };
 
   getSystemLine = function() {
-    return $('<tr class="auto-added"> <td class="right stop_no"></td> <td> <button class="btn btn-default btn-xs clip"><i class="fa fa-clipboard" aria-hidden="true"></i></button> <i class="fa fa-bolt squareinfo info-scoop" title="Scoopable star"></i> <span class="system_name"></span> <span class="coordinates"></span> </td> <td class="right flight_distance"></td> <td class="right total_flight_distance"></td> </tr>');
+    return $('<tr class="auto-added"> <td class="right stop_no"></td> <td> <button class="btn btn-default btn-xs clip"><i class="fa fa-clipboard" aria-hidden="true"></i></button> <i class="fa fa-bolt squareinfo info-scoop" title="Scoopable star"></i> <i class="fa fa-ticket squareinfo info-permit" title="Requires permit"></i> <span class="system_name"></span> <span class="coordinates"></span> </td> <td class="right flight_distance"></td> <td class="right total_flight_distance"></td> </tr>');
   };
 
   handleShutdown = function() {
