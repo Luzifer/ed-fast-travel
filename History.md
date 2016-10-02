@@ -1,3 +1,7 @@
+# 0.12.0 / 2016-10-02
+
+  * Switch to EDDB data, display permit and scoopables
+
 # 0.11.0 / 2016-10-02
 
   * Improve CLI logging
