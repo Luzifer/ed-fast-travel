@@ -212,6 +212,9 @@
     $(editRow).find('.flight_distance').text((data.result.flight_distance.toFixed(2)) + " Ly");
     $(editRow).find('.total_flight_distance').text((data.result.total_flight_distance.toFixed(2)) + " Ly");
     $(editRow).find('.clip').attr('data-clipboard-text', data.result.star_system.name);
+    if (!data.result.star_system.scoopable) {
+      $(editRow).find('.info-scoop').remove();
+    }
     clip = new Clipboard($(editRow).find('.clip')[0]);
     clip.on('success', function(e) {
       toggleButtonClass(e.trigger, 'btn-default', 'btn-success');
@@ -261,7 +264,7 @@
   };
 
   getSystemLine = function() {
-    return $('<tr class="auto-added"> <td class="right stop_no"></td> <td> <button class="btn btn-default btn-xs clip"><i class="fa fa-clipboard" aria-hidden="true"></i></button> <span class="system_name"></span> <span class="coordinates"></span> </td> <td class="right flight_distance"></td> <td class="right total_flight_distance"></td> </tr>');
+    return $('<tr class="auto-added"> <td class="right stop_no"></td> <td> <button class="btn btn-default btn-xs clip"><i class="fa fa-clipboard" aria-hidden="true"></i></button> <i class="fa fa-bolt squareinfo info-scoop" title="Scoopable star"></i> <span class="system_name"></span> <span class="coordinates"></span> </td> <td class="right flight_distance"></td> <td class="right total_flight_distance"></td> </tr>');
   };
 
   handleShutdown = function() {
