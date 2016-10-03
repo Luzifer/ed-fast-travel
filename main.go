@@ -102,6 +102,7 @@ func main() {
 		if err := generateGOBDatabase(); err != nil {
 			log.Fatalf("Could not generate database: %s", err)
 		}
+		os.Exit(0)
 	}
 
 	if _, err := os.Stat(path.Join(cfg.EDSMDumpPath, readableDumpName)); err != nil || cfg.UpdateData {
