@@ -4,19 +4,14 @@
 	"GodepVersion": "v74",
 	"Deps": [
 		{
-			"ImportPath": "github.com/Luzifer/gobuilder/autoupdate",
-			"Comment": "v1.34.6-12-g5ddec66",
-			"Rev": "5ddec66168c9fea70c9bfed4be83e54d9488e8f1"
-		},
-		{
-			"ImportPath": "github.com/Luzifer/gobuilder/builddb",
-			"Comment": "v1.34.6-12-g5ddec66",
-			"Rev": "5ddec66168c9fea70c9bfed4be83e54d9488e8f1"
+			"ImportPath": "github.com/Luzifer/go_helpers/github",
+			"Comment": "v1.5.0",
+			"Rev": "05136a00ce81fe0d79d7bed1dd737c01f8f8151e"
 		},
 		{
 			"ImportPath": "github.com/Luzifer/rconfig",
-			"Comment": "v1.1.0-2-g31d785f",
-			"Rev": "31d785fa79c95e7b92c955689c5b0feed4fc0c7d"
+			"Comment": "v1.1.0",
+			"Rev": "c27bd3a64b5b19556914d9fec69922cf3852d585"
 		},
 		{
 			"ImportPath": "github.com/cheggaaa/pb",
@@ -42,15 +37,15 @@
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/go-update",
-			"Rev": "8f6b8b7d0faade910de91da38369cc69c2dd6b98"
+			"Rev": "8152e7eb6ccf8679a64582a66b78519688d156ad"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/go-update/internal/binarydist",
-			"Rev": "8f6b8b7d0faade910de91da38369cc69c2dd6b98"
+			"Rev": "8152e7eb6ccf8679a64582a66b78519688d156ad"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/go-update/internal/osext",
-			"Rev": "8f6b8b7d0faade910de91da38369cc69c2dd6b98"
+			"Rev": "8152e7eb6ccf8679a64582a66b78519688d156ad"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-isatty",
@@ -86,11 +81,11 @@
 		},
 		{
 			"ImportPath": "github.com/spf13/pflag",
-			"Rev": "367864438f1b1a3c7db4da06a2f55b144e6784e0"
+			"Rev": "c7e63cf4530bcd3ba943729cee0efeff2ebea63f"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "53feefa2559fb8dfa8d81baad31be332c97d6c77"
+			"Rev": "31c299268d302dd0aa9a0dcf765a3d58971ac83f"
 		}
 	]
 }
