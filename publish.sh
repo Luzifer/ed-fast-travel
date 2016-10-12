@@ -1,8 +1,10 @@
-#!/bin/sh -e
+#!/bin/sh
 
 VERSION=$(git describe --tags --exact-match)
 REPO=$(basename $(pwd))
 ARCHS="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64 windows/386"
+
+set -e
 
 if [ -z "${VERSION}" ]; then
   echo "No tag present, stopping build now."
