@@ -1,3 +1,8 @@
+# 0.12.1 / 2016-10-12
+
+  * Add builder configuration for pushes to Github releases
+  * Exit after generate database
+
 # 0.12.0 / 2016-10-02
 
   * Switch to EDDB data, display permit and scoopables
