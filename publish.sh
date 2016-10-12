@@ -19,7 +19,7 @@ set -x
 go get github.com/aktau/github-release
 go get github.com/mitchellh/gox
 
-github-release release --user Luzifer --repo ${REPO} --tag ${VERSION} --name ${VERSION} || true
+github-release release --user Luzifer --repo ${REPO} --tag ${VERSION} --name ${VERSION} --draft || true
 
 gox -ldflags="-X main.version=${VERSION}" -osarch="${ARCHS}"
 sha256sum ${REPO}_* > SHA256SUMS
