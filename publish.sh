@@ -22,6 +22,8 @@ go get github.com/mitchellh/gox
 github-release release --user Luzifer --repo ${REPO} --tag ${VERSION} --name ${VERSION} || true
 
 gox -ldflags="-X main.version=${VERSION}" -osarch="${ARCHS}"
-for file in ${REPO}_*; do
+sha256sum ${REPO}_* > SHA256SUMS
+
+for file in ${REPO}_* SHA256SUMS; do
   github-release upload --user Luzifer --repo ${REPO} --tag ${VERSION} --name ${file} --file ${file}
 done

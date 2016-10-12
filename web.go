@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Luzifer/gobuilder/autoupdate"
+	"github.com/Luzifer/go_helpers/github"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/nicksnyder/go-i18n/i18n"
@@ -151,7 +151,17 @@ func handleUpdate(res http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if hasUpdate, err := autoupdate.New(autoUpdateRepo, autoUpdateLabel).HasUpdate(); err != nil {
+	updater, err := github.NewUpdater(autoUpdateRepo, version)
+	if err != nil {
+		jsonResponse{
+			Success:      false,
+			ErrorMessage: T("warn_no_new_version_found"),
+		}.Send(res, false)
+		log.Printf("Could not initialize update engine: %s", err)
+		return
+	}
+
+	if hasUpdate, err := updater.HasUpdate(true); err != nil {
 		jsonResponse{
 			Success:      false,
 			ErrorMessage: err.Error(),
@@ -167,7 +177,7 @@ func handleUpdate(res http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := autoupdate.New(autoUpdateRepo, autoUpdateLabel).SingleRun(); err != nil {
+	if err := updater.Apply(); err != nil {
 		jsonResponse{
 			Success:      false,
 			ErrorMessage: err.Error(),

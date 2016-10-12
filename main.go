@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	autoUpdateRepo        = "github.com/Luzifer/ed-fast-travel"
+	autoUpdateRepo        = "Luzifer/ed-fast-travel"
 	autoUpdateLabel       = "master"
 	readableDumpName      = "dump_v3.bin"
 	compressedDumpName    = "dump_v3.bin.gz"

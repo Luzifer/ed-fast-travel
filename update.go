@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/Luzifer/gobuilder/autoupdate"
+	"github.com/Luzifer/go_helpers/github"
 	"github.com/Luzifer/rconfig"
 )
 
@@ -12,7 +12,13 @@ func checkUpdates() {
 		return
 	}
 
-	if hasUpdate, err := autoupdate.New(autoUpdateRepo, autoUpdateLabel).HasUpdate(); err != nil {
+	updater, err := github.NewUpdater(autoUpdateRepo, version)
+	if err != nil {
+		log.Printf("Could not initialize update engine: %s", err)
+		return
+	}
+
+	if hasUpdate, err := updater.HasUpdate(false); err != nil {
 		log.Printf("Could not look for updates: %s", err)
 	} else {
 		if hasUpdate {
@@ -26,7 +32,13 @@ func selfUpdate() {
 		return
 	}
 
-	if err := autoupdate.New(autoUpdateRepo, autoUpdateLabel).SingleRun(); err != nil {
+	updater, err := github.NewUpdater(autoUpdateRepo, version)
+	if err != nil {
+		log.Printf("Could not initialize update engine: %s", err)
+		return
+	}
+
+	if err := updater.Apply(); err != nil {
 		log.Printf("Update failed: %s", err)
 	} else {
 		log.Printf("Update successful.")
