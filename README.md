@@ -4,14 +4,14 @@
 
 ## Facts
 
-- It uses the nightly database dump from [EDSM](https://www.edsm.net/)
+- It uses the nightly database dump from [EDDB](https://www.eddb.io/)
 - The database is cached locally in `~/.local/share/ed-fast-travel`
 - It works better when calculating stops in 100 Ly or more distance on the route
 - You can plot courses with more than 25000 Ly distance in ~3m
 
 ## Difficulties
 
-- Maybe the system you want to travel to is not yet known in EDSM  
+- Maybe the system you want to travel to is not yet known in EDSM/EDDB  
 > As of today 0.001313% of the galaxy has been discovered on EDSM, it will take 132,444 years, 4 months and 19 days to discover it entirely.
 - Calculations with ~25 Ly stop distance might work but maybe they contain jumps >30 Ly distance as of above reason
 - Calculations with <20 Ly distance might even run into an endless loop as of above reason
@@ -19,7 +19,7 @@
 
 ## Usage
 
-You can download pre-compiled binaries on [GoBuilder](https://gobuilder.me/github.com/Luzifer/ed-fast-travel) for your system.
+You can download pre-compiled binaries on [Github releases](https://github.com/Luzifer/ed-fast-travel/releases/latest) for your system.
 
 ### Web-Interface
 
@@ -60,9 +60,9 @@ Example: ed-fast-travel 'Sol' 'Dryooe Prou GL-Y d369' 500
   This will calculate stops on your route from Sol to Dryooe Prou GL-Y d369 every 500Ly
 ```
 
-The usage explanation appears because no parameters for routing are passed in that execution but the database now is refreshed. Please be nice to the EDSM servers and refresh only if you are sure you need to get new data and that there is new data. Refreshing multiple times a day does not give you any advantages as the database is only updated once a day.
+The usage explanation appears because no parameters for routing are passed in that execution but the database now is refreshed. Please be nice to the servers and refresh only if you are sure you need to get new data and that there is new data. Refreshing multiple times a day does not give you any advantages as the database is only updated once a day.
 
 ## Build from source
 
-- To build this utility from source you need to have a working go 1.6 or 1.7 environment.
+- To build this utility from source you need to have a working go1.7 environment.
 - Execute `go get github.com/Luzifer/ed-fast-travel` and you will get the `ed-fast-travel` binary inside your `$GOPATH/bin/` directory
