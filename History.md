@@ -1,3 +1,7 @@
+# 0.13.0 / 2016-10-12
+
+  * Change update mechanism to Github releases
+
 # 0.12.1 / 2016-10-12
 
   * Add builder configuration for pushes to Github releases
