@@ -1,0 +1,10 @@
+---
+
+image: "quay.io/luzifer/repo-runner-image"
+checkout_dir: /go/src/github.com/Luzifer/ed-fast-travel
+
+commands:
+  - make ci
+
+environment:
+  CGO_ENABLED: 0

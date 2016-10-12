@@ -1,5 +1,8 @@
 default: build
 
+ci:
+	./publish.sh
+
 code:
 	coffee -c assets/application.coffee
 	go generate
