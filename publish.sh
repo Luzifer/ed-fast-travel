@@ -2,7 +2,7 @@
 
 VERSION=$(git describe --tags --exact-match)
 REPO=$(basename $(pwd))
-ARCHS="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64 windows/386"
+ARCHS="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64"
 
 set -e
 
