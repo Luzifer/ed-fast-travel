@@ -1,3 +1,10 @@
+# 0.14.0 / 2016-10-19
+
+  * Drop windows/386 support
+  * Several minor fixes in README
+  * Do not break if no tag is present
+  * Create new releases as drafts
+
 # 0.13.0 / 2016-10-12
 
   * Change update mechanism to Github releases
