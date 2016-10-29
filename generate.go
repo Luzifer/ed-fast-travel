@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"compress/gzip"
 	"encoding/csv"
 	"encoding/gob"
 	"encoding/json"
@@ -12,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"runtime"
 
 	"github.com/cheggaaa/pb"
 )
@@ -38,28 +38,8 @@ func generateGOBDatabase() error {
 	}
 	defer fp.Close()
 
-	fpzip, err := os.Create(path.Join(cfg.EDSMDumpPath, compressedDumpName))
-	if err != nil {
-		return err
-	}
-	defer fpzip.Close()
-
-	zw := gzip.NewWriter(fpzip)
-
 	log.Printf("Writing own database...")
 	if err := gob.NewEncoder(fp).Encode(tmp); err != nil {
-		return err
-	}
-
-	log.Printf("Writing gzipped database...")
-	if err := gob.NewEncoder(zw).Encode(tmp); err != nil {
-		return err
-	}
-
-	if err := zw.Flush(); err != nil {
-		return err
-	}
-	if err := zw.Close(); err != nil {
 		return err
 	}
 
@@ -173,6 +153,10 @@ func readSystems(tmp *starSystemDatabase) error {
 			log.Fatalf("ERR while adding system %#v: %s", system, err)
 		}
 		bar.Increment()
+
+		if bar.Get()%100000 == 0 {
+			runtime.GC()
+		}
 	}
 	bar.FinishPrint("Done")
 	tmp.Min, tmp.Max = starCoordinate{minX, minY, minY}, starCoordinate{maxX, maxY, maxZ}
