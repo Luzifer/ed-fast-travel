@@ -1,3 +1,7 @@
+# 0.15.0 / 2016-10-29
+
+  * Migrate to EDDB v5 API
+
 # 0.14.0 / 2016-10-19
 
   * Drop windows/386 support
