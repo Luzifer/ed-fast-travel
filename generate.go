@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
+	"encoding/csv"
 	"encoding/gob"
 	"encoding/json"
 	"io"
@@ -111,13 +112,13 @@ func readSystems(tmp *starSystemDatabase) error {
 	}
 	defer systemsDump.Body.Close()
 
-	systemsFile, err := os.Create(path.Join(cfg.EDSMDumpPath, "systems.jsonl"))
+	systemsFile, err := os.Create(path.Join(cfg.EDSMDumpPath, "systems.csv"))
 	if err != nil {
 		log.Fatalf("Unable to create dump file")
 	}
 	defer func() {
 		systemsFile.Close()
-		os.Remove(path.Join(cfg.EDSMDumpPath, "systems.jsonl"))
+		os.Remove(path.Join(cfg.EDSMDumpPath, "systems.csv"))
 	}()
 	io.Copy(systemsFile, systemsDump.Body)
 	systemsFile.Seek(0, 0)
@@ -126,11 +127,25 @@ func readSystems(tmp *starSystemDatabase) error {
 	var minX, minY, minZ float64 = math.MaxFloat64, math.MaxFloat64, math.MaxFloat64
 	var maxX, maxY, maxZ float64 = -1 * math.MaxFloat64, -1 * math.MaxFloat64, -1 * math.MaxFloat64
 
-	systemsScanner := bufio.NewScanner(systemsFile)
+	systemsScanner := csv.NewReader(systemsFile)
+
+	headers, err := systemsScanner.Read()
+	if err != nil {
+		log.Fatalf("Unable to read header line: %s", err)
+	}
 
 	bar := pb.StartNew(0)
-	for systemsScanner.Scan() {
-		system, err := starSystemFromEDDBData(systemsScanner.Bytes())
+	for {
+		record, err := systemsScanner.Read()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			log.Printf("Parser error: %s", err)
+		}
+
+		system, err := starSystemFromEDDBData(headers, record)
 		if err != nil {
 			log.Fatalf("ERR while parsing system: %s", err)
 		}

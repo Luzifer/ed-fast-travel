@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math"
 	"strings"
@@ -43,24 +42,21 @@ func (b body) IsScoopable() bool {
 	return strings.Contains("O B A F G K M", b.SpectralClass)
 }
 
-func starSystemFromEDDBData(line []byte) (*starSystem, error) {
-	tmp := struct {
-		Name        string  `json:"name"`
-		X           float64 `json:"x"`
-		Y           float64 `json:"y"`
-		Z           float64 `json:"z"`
-		ID          int64   `json:"id"`
-		NeedsPermit bool    `json:"needs_permit"`
-	}{}
-	if err := json.Unmarshal(line, &tmp); err != nil {
-		return nil, err
+func starSystemFromEDDBData(headers, record []string) (*starSystem, error) {
+	tmp := map[string]string{}
+	for i := range headers {
+		tmp[headers[i]] = record[i]
 	}
 
 	return &starSystem{
-		Name:   tmp.Name,
-		Coords: starCoordinate{tmp.X, tmp.Y, tmp.Z},
-		ID:     tmp.ID,
-		Permit: tmp.NeedsPermit,
+		Name: tmp["name"],
+		Coords: starCoordinate{
+			mustFloat64(tmp["x"]),
+			mustFloat64(tmp["y"]),
+			mustFloat64(tmp["z"]),
+		},
+		ID:     mustInt64(tmp["id"]),
+		Permit: mustBool(tmp["needs_permit"]),
 	}, nil
 }
 
