@@ -6,7 +6,7 @@ services:
 language: go
 
 before_install:
-  - curl -sSLo vault2env https://gobuilder.me/get/github.com/Luzifer/vault2env/vault2env_v0.6.0_linux-amd64
+  - curl -sSLo vault2env https://github.com/Luzifer/vault2env/releases/download/v0.6.1/vault2env_linux_amd64
   - chmod +x vault2env
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
