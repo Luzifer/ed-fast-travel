@@ -1,3 +1,10 @@
+# 0.15.1 / 2016-12-14
+
+  * Remove local publish-script
+  * Download vault2env from Github
+  * Build database on travis
+  * Move gzip compression to unix level
+
 # 0.15.0 / 2016-10-29
 
   * Migrate to EDDB v5 API
