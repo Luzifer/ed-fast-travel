@@ -14,8 +14,8 @@ build:
 install:
 	go install -ldflags "-X main.version=$(shell git describe --tags || git rev-parse --short HEAD || echo dev)"
 
-update-db-dump: build
-	./ed-fast-travel --generate-database --data-path=/tmp
+update-db-dump:
+	ed-fast-travel --generate-database --data-path=/tmp
 	gzip -c /tmp/dump_v3.bin > /tmp/dump_v3.bin.gz
 	vault2env aws/sts/ed-fast-travel \
 		-t access_key=AWS_ACCESS_KEY_ID \

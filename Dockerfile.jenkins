@@ -1,0 +1,10 @@
+FROM debian
+
+ADD https://github.com/Luzifer/ed-fast-travel/releases/download/v0.15.1/ed-fast-travel_linux_amd64 /usr/local/bin/ed-fast-travel
+ADD https://github.com/Luzifer/vault2env/releases/download/v0.6.1/vault2env_linux_amd64 /usr/local/bin/vault2env
+
+RUN set -ex \
+ && apt-get update \
+ && apt-get install -y make curl python-pip python-dev build-essential libyaml-dev \
+ && pip install awscli \
+ && chmod +x /usr/local/bin/ed-fast-travel /usr/local/bin/vault2env
